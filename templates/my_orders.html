@@ -122,7 +122,7 @@
 
                     <hr class="border-primary/30 my-4">
 
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-2">
                         <div class="fw-semibold">Отклики</div>
                         {% if order.status == 'in_progress' %}
                             <div class="d-flex flex-column align-items-end gap-2">
@@ -227,17 +227,17 @@
                                             </div>
                                         {% endif %}
 
-                                        <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                            <form method="POST" action="{{ url_for('application_status', app_id=a.id) }}" class="d-flex gap-2">
+                                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 order-response-actions">
+                                            <form method="POST" action="{{ url_for('application_status', app_id=a.id) }}" class="d-flex gap-2 order-response-action-form">
                                                 <input type="hidden" name="status" value="accepted">
                                                 <button type="submit" class="btn btn-sm btn-success rounded-3" {% if a.status == 'accepted' or order.payment_status != 'funded' or order.status not in ['open', 'has_responses'] or not a.customer_opened_chat %}disabled{% endif %}>Принять</button>
                                             </form>
-                                            <form method="POST" action="{{ url_for('application_status', app_id=a.id) }}" class="d-flex gap-2">
+                                            <form method="POST" action="{{ url_for('application_status', app_id=a.id) }}" class="d-flex gap-2 order-response-action-form">
                                                 <input type="hidden" name="status" value="declined">
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary rounded-3" {% if a.status == 'declined' or order.status not in ['open', 'has_responses'] %}disabled{% endif %}>Отклонить</button>
                                             </form>
                                             {% if a.conversation_id %}
-                                                <a href="{{ url_for('conversation', conv_id=a.conversation_id) }}" class="btn btn-sm btn-outline-primary rounded-3 ms-auto">
+                                                <a href="{{ url_for('conversation', conv_id=a.conversation_id) }}" class="btn btn-sm btn-outline-primary rounded-3 ms-sm-auto">
                                                     {% if a.customer_opened_chat %}Открыть чат{% else %}Обсудить в чате{% endif %}
                                                 </a>
                                             {% endif %}
