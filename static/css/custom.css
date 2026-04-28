@@ -1850,3 +1850,159 @@ canvas {
         padding-bottom: max(.5rem, env(safe-area-inset-bottom, 0px));
     }
 }
+
+/* ===== Mobile header patch 03: fixed topbar + cleaner menu spacing ===== */
+@media (max-width: 1199.98px) {
+    body.app-public,
+    body.app-admin {
+        scroll-padding-top: 78px;
+    }
+
+    .main {
+        padding-top: 76px !important;
+    }
+
+    .app-topbar,
+    .admin-topbar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1030;
+        min-height: 76px;
+        padding-top: .8rem !important;
+        padding-bottom: .8rem !important;
+    }
+
+    .app-topbar .container-fluid,
+    .admin-topbar .container-fluid {
+        min-height: 50px;
+        align-items: center !important;
+    }
+
+    .app-topbar__brand,
+    .admin-topbar .container-fluid > .d-flex:first-child {
+        gap: .85rem !important;
+    }
+
+    .app-menu-btn {
+        width: 48px;
+        height: 48px;
+        flex: 0 0 48px;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 20px rgba(99, 91, 255, .14);
+    }
+
+    .app-menu-btn i {
+        font-size: 1.12rem;
+        line-height: 1;
+    }
+
+    .app-public .navbar-brand {
+        margin-left: .1rem;
+        line-height: 1;
+    }
+
+    .app-mobile-menu {
+        width: min(360px, 88vw) !important;
+    }
+
+    .app-mobile-menu .offcanvas-header {
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.1rem 1.35rem .95rem;
+    }
+
+    .app-mobile-menu .offcanvas-header > .d-flex {
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: .65rem;
+    }
+
+    .app-mobile-menu .offcanvas-header [data-bs-dismiss="offcanvas"] {
+        margin-left: auto;
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 !important;
+        border-radius: 14px !important;
+    }
+
+    .app-mobile-menu .offcanvas-body {
+        padding-left: 1.35rem;
+        padding-right: 1.35rem;
+    }
+
+    .mobile-menu-user {
+        min-height: 72px;
+        padding: 12px 14px !important;
+        overflow: visible;
+        align-items: center !important;
+    }
+
+    .mobile-menu-user > .min-w-0 {
+        flex: 1 1 auto;
+        min-width: 0;
+        line-height: 1.22;
+    }
+
+    .mobile-menu-user .fw-semibold {
+        display: block;
+        max-width: 100%;
+        font-size: .98rem;
+        line-height: 1.22;
+    }
+
+    .mobile-menu-user .small {
+        display: block;
+        margin-top: .12rem;
+        line-height: 1.25;
+    }
+
+    .mobile-menu-list .nav-link {
+        gap: .15rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .main {
+        padding-top: 72px !important;
+    }
+
+    .app-topbar,
+    .admin-topbar {
+        min-height: 72px;
+        padding-top: .7rem !important;
+        padding-bottom: .7rem !important;
+    }
+
+    .app-topbar__brand,
+    .admin-topbar .container-fluid > .d-flex:first-child {
+        gap: .75rem !important;
+    }
+
+    .app-menu-btn {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+    }
+
+    .app-public .navbar-brand {
+        max-width: calc(100vw - 120px) !important;
+        font-size: 1.48rem !important;
+    }
+
+    .app-mobile-menu {
+        width: min(350px, 88vw) !important;
+    }
+
+    .app-mobile-menu .offcanvas-header,
+    .app-mobile-menu .offcanvas-body {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+}
