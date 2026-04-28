@@ -112,18 +112,43 @@
             </ul>
         </aside>
 
-        <div class="offcanvas offcanvas-start bg-dark-950 border-end border-primary/30" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+        <div class="offcanvas offcanvas-start bg-dark-950 border-end border-primary/30 app-mobile-menu" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
             <div class="offcanvas-header">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center min-w-0">
                     <i class="bi bi-lightning-charge-fill fs-4 text-primary me-2"></i>
-                    <h5 class="offcanvas-title text-primary fw-bold mb-0" id="sidebarOffcanvasLabel">JobGuard</h5>
+                    <h5 class="offcanvas-title text-primary fw-bold mb-0 text-truncate" id="sidebarOffcanvasLabel">JobGuard</h5>
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-primary rounded-3" data-bs-dismiss="offcanvas" aria-label="Close">
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-3" data-bs-dismiss="offcanvas" aria-label="Закрыть меню">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
-            <div class="offcanvas-body pt-0">
-                <ul class="nav flex-column gap-2">
+            <div class="offcanvas-body pt-0 d-flex flex-column gap-3">
+                <form class="mobile-menu-search" role="search" action="{{ url_for('orders_list') }}" method="GET">
+                    <div class="input-group searchbar">
+                        <span class="input-group-text bg-dark-900 border-primary/30 text-muted"><i class="bi bi-search"></i></span>
+                        <input class="form-control bg-dark-900 border-primary/30 text-light" name="q" type="search" placeholder="Поиск заказов и навыков" aria-label="Поиск" value="{{ request.args.get('q','') if request.endpoint=='orders_list' else '' }}">
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+
+                {% if current_user.is_authenticated %}
+                    <div class="mobile-menu-user d-flex align-items-center gap-3 p-3 rounded-4 border border-primary/30 bg-dark-900">
+                        {% set avatar = get_avatar(current_user.id) %}
+                        {% if avatar %}
+                            <img src="{{ url_for('avatar_download', filename=avatar) }}" alt="" class="rounded-circle flex-shrink-0" style="width:42px;height:42px;object-fit:cover;">
+                        {% else %}
+                            <span class="avatar flex-shrink-0"><i class="bi bi-person"></i></span>
+                        {% endif %}
+                        <div class="min-w-0">
+                            <div class="fw-semibold text-light text-truncate">{{ user_display_name(current_user.id) }}</div>
+                            <div class="text-muted small text-truncate">
+                                {% if current_role == 'student' %}Студент{% elif current_role == 'customer' %}Заказчик{% elif current_role == 'admin' %}Администратор{% else %}Пользователь{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <ul class="nav flex-column gap-2 mobile-menu-list">
                     <li>
                         <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('index') %}active{% endif %}" href="{{ url_for('index') }}">
                             <i class="bi bi-grid-1x2-fill me-3 fs-5"></i> Главная
@@ -134,6 +159,13 @@
                             <i class="bi bi-list-ul me-3 fs-5"></i> Все заказы
                         </a>
                     </li>
+                    {% if current_user.is_authenticated and current_role == 'customer' %}
+                        <li>
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('order_new') %}active{% endif %}" href="{{ url_for('order_new') }}">
+                                <i class="bi bi-plus-circle-fill me-3 fs-5"></i> Создать заказ
+                            </a>
+                        </li>
+                    {% endif %}
                     {% if current_user.is_authenticated and current_role == 'student' %}
                         <li>
                             <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('responses') %}active{% endif %}" href="{{ url_for('responses') }}">
@@ -155,50 +187,74 @@
                             </a>
                         </li>
                         <li>
+                            <a class="nav-link text-light d-flex align-items-center justify-content-between py-3 px-3 rounded {% if is_active('notifications_page') %}active{% endif %}" href="{{ url_for('notifications_page') }}">
+                                <span><i class="bi bi-bell-fill me-3 fs-5"></i> Уведомления</span>
+                                <span class="badge rounded-pill bg-danger jg-mobile-notification-count {% if unread_notifications|length == 0 %}d-none{% endif %}">{{ unread_notifications|length }}</span>
+                            </a>
+                        </li>
+                        <li>
                             <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('balance') %}active{% endif %}" href="{{ url_for('balance') }}">
                                 <i class="bi bi-wallet2 me-3 fs-5"></i> Баланс
                             </a>
                         </li>
-                    {% endif %}
-
-                    {% if current_user.is_authenticated %}
                         <li>
                             <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('support_page') %}active{% endif %}" href="{{ url_for('support_page') }}">
                                 <i class="bi bi-question-circle-fill me-3 fs-5"></i> Поддержка
                             </a>
                         </li>
-                    {% endif %}
-                    {% if current_user.is_authenticated and current_role == 'admin' %}
+                        {% if current_role == 'admin' %}
+                            <li>
+                                <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('admin_dashboard','admin_users','admin_orders','admin_disputes','admin_support') %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-speedometer2 me-3 fs-5"></i> Админка
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="pt-2 mt-1 border-top border-primary/30">
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('profile') %}active{% endif %}" href="{{ url_for('profile') }}">
+                                <i class="bi bi-person-circle me-3 fs-5"></i> Профиль
+                            </a>
+                        </li>
                         <li>
-                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('admin_dashboard','admin_users','admin_orders','admin_disputes','admin_support') %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
-                                <i class="bi bi-speedometer2 me-3 fs-5"></i> Админка
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('settings') %}active{% endif %}" href="{{ url_for('settings') }}">
+                                <i class="bi bi-gear-fill me-3 fs-5"></i> Настройки
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="pt-2 mt-1 border-top border-primary/30">
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('login') %}active{% endif %}" href="{{ url_for('login') }}">
+                                <i class="bi bi-box-arrow-in-right me-3 fs-5"></i> Войти
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('register') %}active{% endif %}" href="{{ url_for('register') }}">
+                                <i class="bi bi-person-plus-fill me-3 fs-5"></i> Создать аккаунт
                             </a>
                         </li>
                     {% endif %}
-                    <li class="mt-3 pt-3 border-top border-primary/30">
-                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('settings') %}active{% endif %}" href="{{ url_for('settings') }}">
-                            <i class="bi bi-gear-fill me-3 fs-5"></i> Настройки
-                        </a>
-                    </li>
                 </ul>
+
+                <div class="mobile-menu-footer mt-auto pt-2 border-top border-primary/30 d-grid gap-2">
+                    <button class="btn btn-outline-primary rounded-3 theme-toggle-btn mobile-theme-toggle" type="button" id="themeToggleMobile">
+                        <i class="bi bi-sun me-2" id="themeToggleIconMobile"></i><span>Сменить тему</span>
+                    </button>
+                    {% if current_user.is_authenticated %}
+                        <a class="btn btn-outline-primary rounded-3" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Выйти</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
         <main class="main flex-grow-1">
-            <nav class="navbar navbar-expand-lg px-3 px-lg-4 py-3 sticky-top navbar--glass">
+            <nav class="navbar navbar-expand-lg px-3 px-lg-4 py-3 sticky-top navbar--glass app-topbar">
                 <div class="container-fluid">
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-primary rounded-3 d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+                    <div class="d-flex align-items-center gap-2 app-topbar__brand">
+                        <button class="btn btn-outline-primary rounded-3 d-xl-none app-menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
                             <i class="bi bi-list"></i>
                         </button>
                         <a class="navbar-brand text-primary fw-bold fs-3 d-xl-none mb-0" href="{{ url_for('index') }}">JobGuard</a>
                     </div>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarContent">
-                        <form class="d-flex flex-grow-1 mx-lg-4 mt-3 mt-lg-0" role="search" action="{{ url_for('orders_list') }}" method="GET">
+                    <div class="collapse navbar-collapse app-navbar-collapse d-none d-lg-flex" id="navbarContent">
+                        <form class="d-flex flex-grow-1 mx-lg-4 mt-3 mt-lg-0 app-top-search" role="search" action="{{ url_for('orders_list') }}" method="GET">
                             <div class="input-group input-group-lg searchbar">
                                 <span class="input-group-text bg-dark-900 border-primary/30 text-muted"><i class="bi bi-search"></i></span>
                                 <input class="form-control bg-dark-900 border-primary/30 text-light" name="q" type="search" placeholder="Поиск заказов, категорий, навыков..." aria-label="Search" value="{{ request.args.get('q','') if request.endpoint=='orders_list' else '' }}">
@@ -206,7 +262,7 @@
                             </div>
                         </form>
 
-                        <ul class="navbar-nav ms-auto align-items-center gap-2 gap-lg-3 mt-3 mt-lg-0">
+                        <ul class="navbar-nav ms-auto align-items-center gap-2 gap-lg-3 mt-3 mt-lg-0 app-top-actions">
                             <li class="nav-item">
                                 <button class="nav-link jg-notification-btn theme-toggle-btn" type="button" id="themeToggle" title="Сменить тему">
                                     <i class="bi bi-sun fs-5" id="themeToggleIcon"></i>
@@ -295,67 +351,37 @@
         </main>
     </div>
 
-    <nav class="mobile-bottom-nav d-xl-none" aria-label="Быстрая навигация">
-        <a class="mobile-bottom-nav__item {% if is_active('index') %}active{% endif %}" href="{{ url_for('index') }}">
-            <i class="bi bi-house-door"></i><span>Главная</span>
-        </a>
-        <a class="mobile-bottom-nav__item {% if is_active('orders_list','order_detail','order_new','order_edit','order_fund') %}active{% endif %}" href="{{ url_for('orders_list') }}">
-            <i class="bi bi-list-ul"></i><span>Заказы</span>
-        </a>
-        {% if current_user.is_authenticated %}
-            {% if current_role == 'student' %}
-                <a class="mobile-bottom-nav__item {% if is_active('responses') %}active{% endif %}" href="{{ url_for('responses') }}">
-                    <i class="bi bi-person-check"></i><span>Отклики</span>
-                </a>
-            {% elif current_role == 'customer' %}
-                <a class="mobile-bottom-nav__item {% if is_active('my_orders') %}active{% endif %}" href="{{ url_for('my_orders') }}">
-                    <i class="bi bi-briefcase"></i><span>Мои</span>
-                </a>
-            {% endif %}
-            <a class="mobile-bottom-nav__item {% if is_active('messages','conversation') %}active{% endif %}" href="{{ url_for('messages') }}">
-                <i class="bi bi-chat-dots"></i><span>Чат</span>
-            </a>
-            <a class="mobile-bottom-nav__item {% if is_active('profile','settings','balance') %}active{% endif %}" href="{{ url_for('profile') }}">
-                <i class="bi bi-person"></i><span>Профиль</span>
-            </a>
-        {% else %}
-            <a class="mobile-bottom-nav__item {% if is_active('login') %}active{% endif %}" href="{{ url_for('login') }}">
-                <i class="bi bi-box-arrow-in-right"></i><span>Войти</span>
-            </a>
-            <a class="mobile-bottom-nav__item {% if is_active('register') %}active{% endif %}" href="{{ url_for('register') }}">
-                <i class="bi bi-person-plus"></i><span>Аккаунт</span>
-            </a>
-        {% endif %}
-    </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         (function () {
-            const themeToggle = document.getElementById('themeToggle');
-            const themeToggleIcon = document.getElementById('themeToggleIcon');
+            const themeToggles = [document.getElementById('themeToggle'), document.getElementById('themeToggleMobile')].filter(Boolean);
+            const themeToggleIcons = [document.getElementById('themeToggleIcon'), document.getElementById('themeToggleIconMobile')].filter(Boolean);
 
             function applyJobGuardTheme(theme) {
                 const isDark = theme === 'dark';
                 document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
                 document.body.classList.toggle('theme-dark', isDark);
-                if (themeToggleIcon) {
-                    themeToggleIcon.className = isDark ? 'bi bi-moon-stars fs-5' : 'bi bi-sun fs-5';
-                }
-                if (themeToggle) {
-                    themeToggle.setAttribute('aria-label', isDark ? 'Включить светлую тему' : 'Включить тёмную тему');
-                    themeToggle.setAttribute('title', isDark ? 'Светлая тема' : 'Тёмная тема');
-                }
+                themeToggleIcons.forEach((icon) => {
+                    icon.className = icon.id === 'themeToggleIconMobile'
+                        ? (isDark ? 'bi bi-moon-stars me-2' : 'bi bi-sun me-2')
+                        : (isDark ? 'bi bi-moon-stars fs-5' : 'bi bi-sun fs-5');
+                });
+                themeToggles.forEach((button) => {
+                    button.setAttribute('aria-label', isDark ? 'Включить светлую тему' : 'Включить тёмную тему');
+                    button.setAttribute('title', isDark ? 'Светлая тема' : 'Тёмная тема');
+                });
             }
 
             applyJobGuardTheme(localStorage.getItem('jobguardTheme') || 'light');
 
-            if (themeToggle) {
-                themeToggle.addEventListener('click', function () {
+            themeToggles.forEach((button) => {
+                button.addEventListener('click', function () {
                     const nextTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
                     localStorage.setItem('jobguardTheme', nextTheme);
                     applyJobGuardTheme(nextTheme);
                 });
-            }
+            });
 
             const alerts = document.querySelectorAll('.auto-fade-alert');
             alerts.forEach((el) => {
@@ -392,6 +418,7 @@
             const notificationList = document.getElementById('jgNotificationList');
             const notificationEmpty = document.getElementById('jgNotificationEmpty');
             const notificationMarkBtn = document.getElementById('markNotificationsRead');
+            const mobileNotificationBadges = document.querySelectorAll('.jg-mobile-notification-count');
             let lastUnreadCount = Number(notificationBadge ? notificationBadge.textContent.trim() : 0) || 0;
 
             function escapeHtml(value) {
@@ -414,6 +441,10 @@
                 if (notificationMarkBtn) {
                     notificationMarkBtn.classList.toggle('d-none', unreadCount === 0);
                 }
+                mobileNotificationBadges.forEach((badge) => {
+                    badge.textContent = unreadCount;
+                    badge.classList.toggle('d-none', unreadCount === 0);
+                });
                 if (notificationEmpty) {
                     notificationEmpty.classList.toggle('d-none', unreadCount > 0);
                 }
