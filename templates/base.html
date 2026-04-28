@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}JobGuard{% endblock %}</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon.png') }}?v=2">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}?v=2">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon.png') }}?v=2">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('jobguardTheme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme === 'dark' ? 'dark' : 'light');
+        })();
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body class="min-vh-100 app-public">
+
+    {% if current_user.is_authenticated and unread_notifications %}
+        <div class="toast-container position-fixed top-0 end-0 p-3 jg-toast-stack">
+            {% for n in unread_notifications[:3] %}
+                <div class="toast jg-notification-toast mb-2" role="alert" aria-live="polite" aria-atomic="true" data-bs-delay="3000">
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="jg-toast-icon"><i class="bi bi-bell-fill"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">{{ n.title }}</div>
+                            <div class="small text-muted">{{ n.text }}</div>
+                            {% if n.url %}
+                                <a href="{{ n.url }}" class="small text-primary text-decoration-none">Открыть</a>
+                            {% endif %}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="d-flex flex-grow-1">
+        <aside class="sidebar sidebar--desktop bg-dark-950 border-end border-primary/30 d-none d-xl-flex flex-column p-4">
+            <div class="d-flex align-items-center mb-5">
+                <i class="bi bi-lightning-charge-fill fs-3 text-primary me-3"></i>
+                <h4 class="text-primary fw-bold mb-0">JobGuard</h4>
+            </div>
+
+            <ul class="nav flex-column gap-2">
+                <li>
+                    <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('index') %}active{% endif %}" href="{{ url_for('index') }}">
+                        <i class="bi bi-grid-1x2-fill me-3 fs-5"></i> Главная
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('orders_list','order_detail','order_new','order_edit','order_fund') %}active{% endif %}" href="{{ url_for('orders_list') }}">
+                        <i class="bi bi-list-ul me-3 fs-5"></i> Все заказы
+                    </a>
+                </li>
+                {% if current_user.is_authenticated and current_role == 'student' %}
+                    <li>
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('responses') %}active{% endif %}" href="{{ url_for('responses') }}">
+                            <i class="bi bi-person-check-fill me-3 fs-5"></i> Мои отклики
+                        </a>
+                    </li>
+                {% endif %}
+                {% if current_user.is_authenticated and current_role == 'customer' %}
+                    <li>
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('my_orders') %}active{% endif %}" href="{{ url_for('my_orders') }}">
+                            <i class="bi bi-briefcase-fill me-3 fs-5"></i> Мои объявления
+                        </a>
+                    </li>
+                {% endif %}
+                {% if current_user.is_authenticated %}
+                    <li>
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('messages','conversation') %}active{% endif %}" href="{{ url_for('messages') }}">
+                            <i class="bi bi-chat-dots-fill me-3 fs-5"></i> Сообщения
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('balance') %}active{% endif %}" href="{{ url_for('balance') }}">
+                            <i class="bi bi-wallet2 me-3 fs-5"></i> Баланс
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if current_user.is_authenticated %}
+                    <li>
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('support_page') %}active{% endif %}" href="{{ url_for('support_page') }}">
+                            <i class="bi bi-question-circle-fill me-3 fs-5"></i> Поддержка
+                        </a>
+                    </li>
+                {% endif %}
+                {% if current_user.is_authenticated and current_role == 'admin' %}
+                    <li>
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('admin_dashboard','admin_users','admin_orders','admin_disputes','admin_support') %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-speedometer2 me-3 fs-5"></i> Админка
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="mt-auto">
+                    <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('profile') %}active{% endif %}" href="{{ url_for('profile') }}">
+                        <i class="bi bi-person-circle me-3 fs-5"></i> Профиль
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('settings') %}active{% endif %}" href="{{ url_for('settings') }}">
+                        <i class="bi bi-gear-fill me-3 fs-5"></i> Настройки
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <div class="offcanvas offcanvas-start bg-dark-950 border-end border-primary/30" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+            <div class="offcanvas-header">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-lightning-charge-fill fs-4 text-primary me-2"></i>
+                    <h5 class="offcanvas-title text-primary fw-bold mb-0" id="sidebarOffcanvasLabel">JobGuard</h5>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-3" data-bs-dismiss="offcanvas" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="offcanvas-body pt-0">
+                <ul class="nav flex-column gap-2">
+                    <li>
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('index') %}active{% endif %}" href="{{ url_for('index') }}">
+                            <i class="bi bi-grid-1x2-fill me-3 fs-5"></i> Главная
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('orders_list','order_detail','order_new','order_edit','order_fund') %}active{% endif %}" href="{{ url_for('orders_list') }}">
+                            <i class="bi bi-list-ul me-3 fs-5"></i> Все заказы
+                        </a>
+                    </li>
+                    {% if current_user.is_authenticated and current_role == 'student' %}
+                        <li>
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('responses') %}active{% endif %}" href="{{ url_for('responses') }}">
+                                <i class="bi bi-person-check-fill me-3 fs-5"></i> Мои отклики
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated and current_role == 'customer' %}
+                        <li>
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('my_orders') %}active{% endif %}" href="{{ url_for('my_orders') }}">
+                                <i class="bi bi-briefcase-fill me-3 fs-5"></i> Мои объявления
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                        <li>
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('messages','conversation') %}active{% endif %}" href="{{ url_for('messages') }}">
+                                <i class="bi bi-chat-dots-fill me-3 fs-5"></i> Сообщения
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('balance') %}active{% endif %}" href="{{ url_for('balance') }}">
+                                <i class="bi bi-wallet2 me-3 fs-5"></i> Баланс
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if current_user.is_authenticated %}
+                        <li>
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('support_page') %}active{% endif %}" href="{{ url_for('support_page') }}">
+                                <i class="bi bi-question-circle-fill me-3 fs-5"></i> Поддержка
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated and current_role == 'admin' %}
+                        <li>
+                            <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('admin_dashboard','admin_users','admin_orders','admin_disputes','admin_support') %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-3 fs-5"></i> Админка
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="mt-3 pt-3 border-top border-primary/30">
+                        <a class="nav-link text-light d-flex align-items-center py-3 px-3 rounded {% if is_active('settings') %}active{% endif %}" href="{{ url_for('settings') }}">
+                            <i class="bi bi-gear-fill me-3 fs-5"></i> Настройки
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="main flex-grow-1">
+            <nav class="navbar navbar-expand-lg px-3 px-lg-4 py-3 sticky-top navbar--glass">
+                <div class="container-fluid">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-primary rounded-3 d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <a class="navbar-brand text-primary fw-bold fs-3 d-xl-none mb-0" href="{{ url_for('index') }}">JobGuard</a>
+                    </div>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarContent">
+                        <form class="d-flex flex-grow-1 mx-lg-4 mt-3 mt-lg-0" role="search" action="{{ url_for('orders_list') }}" method="GET">
+                            <div class="input-group input-group-lg searchbar">
+                                <span class="input-group-text bg-dark-900 border-primary/30 text-muted"><i class="bi bi-search"></i></span>
+                                <input class="form-control bg-dark-900 border-primary/30 text-light" name="q" type="search" placeholder="Поиск заказов, категорий, навыков..." aria-label="Search" value="{{ request.args.get('q','') if request.endpoint=='orders_list' else '' }}">
+                                <button class="btn btn-primary px-4 d-none d-md-inline-flex" type="submit">Найти</button>
+                            </div>
+                        </form>
+
+                        <ul class="navbar-nav ms-auto align-items-center gap-2 gap-lg-3 mt-3 mt-lg-0">
+                            <li class="nav-item">
+                                <button class="nav-link jg-notification-btn theme-toggle-btn" type="button" id="themeToggle" title="Сменить тему">
+                                    <i class="bi bi-sun fs-5" id="themeToggleIcon"></i>
+                                </button>
+                            </li>
+                            {% if current_user.is_authenticated %}
+                                <li class="nav-item">
+                                    {% if current_role == 'student' %}
+                                        <a class="nav-link text-light" href="{{ url_for('responses') }}">Мои задания</a>
+                                    {% elif current_role == 'customer' %}
+                                        <a class="nav-link text-light" href="{{ url_for('my_orders') }}">Мои объявления</a>
+                                    {% else %}
+                                        <a class="nav-link text-light" href="{{ url_for('index') }}">Мои задания</a>
+                                    {% endif %}
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-light jg-notification-btn" href="{{ url_for('support_page') }}" title="Поддержка">
+                                        <i class="bi bi-question-circle fs-5"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link text-light position-relative jg-notification-btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Уведомления">
+                                        <i class="bi bi-bell fs-5"></i>
+                                        <span id="jgNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger jg-notification-badge {% if unread_notifications|length == 0 %}d-none{% endif %}">{{ unread_notifications|length }}</span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end bg-dark-950 border-primary/30 jg-notification-menu p-0" id="jgNotificationMenu">
+                                        <div class="d-flex justify-content-between align-items-center p-3 border-bottom border-primary/30">
+                                            <div class="fw-semibold">Уведомления</div>
+                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-3 {% if unread_notifications|length == 0 %}d-none{% endif %}" id="markNotificationsRead">Прочитать</button>
+                                        </div>
+                                        <div id="jgNotificationEmpty" class="p-3 text-muted small {% if unread_notifications|length > 0 %}d-none{% endif %}">Новых уведомлений нет.</div>
+                                        <div class="jg-notification-list {% if unread_notifications|length == 0 %}d-none{% endif %}" id="jgNotificationList">
+                                            {% for n in unread_notifications %}
+                                                <a href="{{ n.url or url_for('notifications_page') }}" class="dropdown-item text-light jg-notification-item">
+                                                    <div class="fw-semibold small">{{ n.title }}</div>
+                                                    <div class="small text-muted">{{ n.text }}</div>
+                                                    <div class="small text-muted mt-1">{{ n.created_at }}</div>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="p-2 border-top border-primary/30">
+                                            <a class="btn btn-sm btn-primary rounded-3 w-100" href="{{ url_for('notifications_page') }}">Все уведомления</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link text-light dropdown-toggle d-flex align-items-center userpill" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                        {% set avatar = get_avatar(current_user.id) %}
+                                        {% if avatar %}
+                                            <img src="{{ url_for('avatar_download', filename=avatar) }}" alt="" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
+                                        {% else %}
+                                            <span class="avatar me-2"><i class="bi bi-person"></i></span>
+                                        {% endif %}
+                                        <span class="d-none d-sm-inline">{{ user_display_name(current_user.id) }}</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end bg-dark-950 border-primary/30">
+                                        <li><a class="dropdown-item text-light" href="{{ url_for('profile') }}">Профиль</a></li>
+                                        <li><a class="dropdown-item text-light" href="{{ url_for('balance') }}">Баланс</a></li>
+                                        <li><a class="dropdown-item text-light" href="{{ url_for('logout') }}">Выйти</a></li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li class="nav-item"><a class="btn btn-outline-primary rounded-3" href="{{ url_for('login') }}">Войти</a></li>
+                                <li class="nav-item"><a class="btn btn-primary rounded-3" href="{{ url_for('register') }}">Создать аккаунт</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container-fluid px-3 px-lg-5 py-4">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show auto-fade-alert" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <nav class="mobile-bottom-nav d-xl-none" aria-label="Быстрая навигация">
+        <a class="mobile-bottom-nav__item {% if is_active('index') %}active{% endif %}" href="{{ url_for('index') }}">
+            <i class="bi bi-house-door"></i><span>Главная</span>
+        </a>
+        <a class="mobile-bottom-nav__item {% if is_active('orders_list','order_detail','order_new','order_edit','order_fund') %}active{% endif %}" href="{{ url_for('orders_list') }}">
+            <i class="bi bi-list-ul"></i><span>Заказы</span>
+        </a>
+        {% if current_user.is_authenticated %}
+            {% if current_role == 'student' %}
+                <a class="mobile-bottom-nav__item {% if is_active('responses') %}active{% endif %}" href="{{ url_for('responses') }}">
+                    <i class="bi bi-person-check"></i><span>Отклики</span>
+                </a>
+            {% elif current_role == 'customer' %}
+                <a class="mobile-bottom-nav__item {% if is_active('my_orders') %}active{% endif %}" href="{{ url_for('my_orders') }}">
+                    <i class="bi bi-briefcase"></i><span>Мои</span>
+                </a>
+            {% endif %}
+            <a class="mobile-bottom-nav__item {% if is_active('messages','conversation') %}active{% endif %}" href="{{ url_for('messages') }}">
+                <i class="bi bi-chat-dots"></i><span>Чат</span>
+            </a>
+            <a class="mobile-bottom-nav__item {% if is_active('profile','settings','balance') %}active{% endif %}" href="{{ url_for('profile') }}">
+                <i class="bi bi-person"></i><span>Профиль</span>
+            </a>
+        {% else %}
+            <a class="mobile-bottom-nav__item {% if is_active('login') %}active{% endif %}" href="{{ url_for('login') }}">
+                <i class="bi bi-box-arrow-in-right"></i><span>Войти</span>
+            </a>
+            <a class="mobile-bottom-nav__item {% if is_active('register') %}active{% endif %}" href="{{ url_for('register') }}">
+                <i class="bi bi-person-plus"></i><span>Аккаунт</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeToggleIcon = document.getElementById('themeToggleIcon');
+
+            function applyJobGuardTheme(theme) {
+                const isDark = theme === 'dark';
+                document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+                document.body.classList.toggle('theme-dark', isDark);
+                if (themeToggleIcon) {
+                    themeToggleIcon.className = isDark ? 'bi bi-moon-stars fs-5' : 'bi bi-sun fs-5';
+                }
+                if (themeToggle) {
+                    themeToggle.setAttribute('aria-label', isDark ? 'Включить светлую тему' : 'Включить тёмную тему');
+                    themeToggle.setAttribute('title', isDark ? 'Светлая тема' : 'Тёмная тема');
+                }
+            }
+
+            applyJobGuardTheme(localStorage.getItem('jobguardTheme') || 'light');
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function () {
+                    const nextTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
+                    localStorage.setItem('jobguardTheme', nextTheme);
+                    applyJobGuardTheme(nextTheme);
+                });
+            }
+
+            const alerts = document.querySelectorAll('.auto-fade-alert');
+            alerts.forEach((el) => {
+                setTimeout(() => {
+                    el.classList.add('fade');
+                    el.style.opacity = '0';
+                    setTimeout(() => el.remove(), 500);
+                }, 5000);
+            });
+
+            const notificationToasts = document.querySelectorAll('.jg-notification-toast');
+            if (notificationToasts.length > 0 && window.bootstrap) {
+                notificationToasts.forEach((el) => {
+                    const toast = new bootstrap.Toast(el, { delay: 3000 });
+                    toast.show();
+                });
+            }
+
+            const markReadBtn = document.getElementById('markNotificationsRead');
+            if (markReadBtn) {
+                markReadBtn.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    fetch("{{ url_for('notifications_mark_read') }}", {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    }).then(() => window.location.reload()).catch(() => {});
+                });
+            }
+
+            {% if current_user.is_authenticated %}
+            const notificationApiUrl = "{{ url_for('notifications_api') }}";
+            const notificationsPageUrl = "{{ url_for('notifications_page') }}";
+            const notificationBadge = document.getElementById('jgNotificationBadge');
+            const notificationList = document.getElementById('jgNotificationList');
+            const notificationEmpty = document.getElementById('jgNotificationEmpty');
+            const notificationMarkBtn = document.getElementById('markNotificationsRead');
+            let lastUnreadCount = Number(notificationBadge ? notificationBadge.textContent.trim() : 0) || 0;
+
+            function escapeHtml(value) {
+                return String(value || '')
+                    .replaceAll('&', '&amp;')
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;')
+                    .replaceAll('"', '&quot;')
+                    .replaceAll("'", '&#039;');
+            }
+
+            function renderNotificationDropdown(data) {
+                const unreadCount = Number(data.unread_count || 0);
+                const latest = Array.isArray(data.latest) ? data.latest : [];
+
+                if (notificationBadge) {
+                    notificationBadge.textContent = unreadCount;
+                    notificationBadge.classList.toggle('d-none', unreadCount === 0);
+                }
+                if (notificationMarkBtn) {
+                    notificationMarkBtn.classList.toggle('d-none', unreadCount === 0);
+                }
+                if (notificationEmpty) {
+                    notificationEmpty.classList.toggle('d-none', unreadCount > 0);
+                }
+                if (notificationList) {
+                    notificationList.classList.toggle('d-none', unreadCount === 0);
+                    notificationList.innerHTML = latest.filter((n) => !n.is_read).map((n) => {
+                        const href = n.url || notificationsPageUrl;
+                        return `
+                            <a href="${escapeHtml(href)}" class="dropdown-item text-light jg-notification-item">
+                                <div class="fw-semibold small">${escapeHtml(n.title)}</div>
+                                <div class="small text-muted">${escapeHtml(n.text)}</div>
+                                <div class="small text-muted mt-1">${escapeHtml(n.created_at)}</div>
+                            </a>
+                        `;
+                    }).join('');
+                }
+
+                if (unreadCount > lastUnreadCount && latest.length && window.bootstrap) {
+                    const n = latest.find((item) => !item.is_read) || latest[0];
+                    const container = document.querySelector('.jg-toast-stack') || (() => {
+                        const el = document.createElement('div');
+                        el.className = 'toast-container position-fixed top-0 end-0 p-3 jg-toast-stack';
+                        document.body.appendChild(el);
+                        return el;
+                    })();
+                    const toastEl = document.createElement('div');
+                    toastEl.className = 'toast jg-notification-toast mb-2';
+                    toastEl.setAttribute('role', 'alert');
+                    toastEl.innerHTML = `
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="jg-toast-icon"><i class="bi bi-bell-fill"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold">${escapeHtml(n.title)}</div>
+                                <div class="small text-muted">${escapeHtml(n.text)}</div>
+                                ${n.url ? `<a href="${escapeHtml(n.url)}" class="small text-primary text-decoration-none">Открыть</a>` : ''}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                        </div>
+                    `;
+                    container.appendChild(toastEl);
+                    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+                    toast.show();
+                    toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+                }
+                lastUnreadCount = unreadCount;
+            }
+
+            async function refreshNotifications() {
+                try {
+                    const response = await fetch(notificationApiUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' }, cache: 'no-store' });
+                    if (!response.ok) return;
+                    renderNotificationDropdown(await response.json());
+                } catch (e) {}
+            }
+
+            setInterval(refreshNotifications, 3500);
+            {% endif %}
+
+            const navbar = document.querySelector('.navbar--glass');
+            if (navbar) {
+                window.addEventListener('scroll', () => {
+                    if (window.pageYOffset > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

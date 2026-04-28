@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Чат — JobGuard{% endblock %}
+{% block content %}
+<style>
+.chat-page .card,.chat-page .card:hover{transform:none!important}.chat-page__body{height:70vh;max-height:720px}.live-chat-scroll{padding-right:.35rem}.live-row{display:flex;width:100%;margin-bottom:.55rem}.live-row.me{justify-content:flex-end}.live-row.other{justify-content:flex-start}.live-row.system{justify-content:center}.live-bubble{display:inline-block!important;width:auto!important;min-width:0!important;max-width:min(390px,74%)!important;height:auto!important;min-height:0!important;padding:8px 11px 6px!important;border-radius:16px!important;line-height:1.38!important;box-sizing:border-box!important;box-shadow:none!important;transform:none!important}.live-bubble.me{background:linear-gradient(135deg,var(--primary),var(--primary-dark))!important;color:#fff!important;border:none!important;border-bottom-right-radius:6px!important}.live-bubble.other{background:var(--dark-900)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-bottom-left-radius:6px!important}.live-bubble.system{max-width:82%!important;background:var(--primary-soft)!important;color:var(--text-muted)!important;border:1px solid var(--line)!important;font-size:12px!important;text-align:center!important}.live-text{display:block!important;margin:0!important;padding:0!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:break-word!important;font-size:14px!important;line-height:1.38!important}.live-meta{display:block!important;margin-top:4px!important;padding:0!important;font-size:10.5px!important;line-height:1!important;opacity:.62!important;text-align:right!important;white-space:nowrap!important}.chat-input{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:18px!important;padding:8px!important;box-shadow:var(--card-shadow-soft)!important}@media(max-width:768px){.live-bubble{max-width:86%!important}.chat-page__body{height:calc(100vh - 190px);max-height:none}.chat-input{border-radius:16px!important}}
+</style>
+
+<div class="chat-page">
+  <div class="row g-4">
+    <div class="col-lg-4 d-none d-lg-block">
+      <div class="card h-100"><div class="card-body p-3 p-lg-4">
+        <div class="fw-semibold mb-2">О заказе</div>
+        <div class="text-muted small mb-1">Заказ #{{ order.id }}</div>
+        <div class="fw-semibold mb-2">{{ order.title }}</div>
+        <div class="text-muted mb-3">{{ order.description }}</div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          {% for t in order.tags %}<span class="badge bg-dark-900 border border-primary/30">{{ t }}</span>{% endfor %}
+        </div>
+        <a class="btn btn-outline-primary rounded-3 w-100" href="{{ url_for('order_detail', order_id=order.id) }}">Открыть карточку заказа</a>
+      </div></div>
+    </div>
+    <div class="col-lg-8">
+      <div class="card"><div class="card-body d-flex flex-column chat-page__body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div><div class="text-muted small">Диалог по заказу #{{ order.id }}</div><div class="fw-semibold">{{ order.title }}</div></div>
+          <a class="btn btn-outline-primary btn-sm rounded-3" href="{{ url_for('messages') }}">Все диалоги</a>
+        </div>
+        <div class="flex-grow-1 overflow-auto mb-3 live-chat-scroll" id="chatScroll"></div>
+        <form method="POST" enctype="multipart/form-data" class="mt-auto" id="chatForm" action="{{ url_for('conversation', conv_id=conv.id) }}">
+          <div class="chat-input d-flex align-items-end gap-2">
+            <button class="btn btn-outline-primary chat-input-attach" type="button" id="chatAttachBtn"><i class="bi bi-paperclip"></i></button>
+            <textarea class="form-control bg-dark-900 border-primary/30 text-light chat-input-text" id="chatText" name="text" rows="1" placeholder="Напиши сообщение..." style="resize:none;"></textarea>
+            <input type="file" name="file" id="chatFile" class="d-none" accept=".pdf,.doc,.docx">
+            <button class="btn btn-primary rounded-3 chat-input-send" type="submit"><i class="bi bi-send me-1"></i> Отправить</button>
+          </div>
+        </form>
+      </div></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const initialMessages={{ messages_payload|default([], true)|tojson }};
+  const apiUrl="{{ url_for('conversation_api', conv_id=conv.id) }}";
+  const sendUrl="{{ url_for('conversation_send', conv_id=conv.id) }}";
+  const form=document.getElementById('chatForm');
+  const ta=document.getElementById('chatText');
+  const attachBtn=document.getElementById('chatAttachBtn');
+  const fileInput=document.getElementById('chatFile');
+  const scrollBox=document.getElementById('chatScroll');
+  let lastCount=0;
+  let isSending=false;
+  function escapeHtml(value){return String(value||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');}
+  function renderMessages(messages){
+    if(!scrollBox)return;
+    const shouldStick=scrollBox.scrollTop+scrollBox.clientHeight>=scrollBox.scrollHeight-80;
+    scrollBox.innerHTML='';
+    if(!messages.length){scrollBox.innerHTML='<div class="text-muted text-center mt-5">Напиши первое сообщение.</div>';lastCount=0;return;}
+    messages.forEach(function(m){
+      const type=m.kind==='system'?'system':(m.is_me?'me':'other');
+      const row=document.createElement('div');row.className='live-row '+type;
+      const bubble=document.createElement('div');bubble.className='live-bubble '+type;
+      const text=document.createElement('div');text.className='live-text';
+      if(m.kind==='file'&&m.file_url){text.innerHTML='<a href="'+escapeHtml(m.file_url)+'" class="text-decoration-none text-light"><i class="bi bi-paperclip me-1"></i>'+escapeHtml(m.file_name||'Файл')+'</a>';}
+      else{text.textContent=m.text||'';}
+      bubble.appendChild(text);
+      if(m.kind!=='system'){
+        const meta=document.createElement('div');meta.className='live-meta';meta.textContent=(m.is_me?'Вы':(m.sender_name||m.sender))+' · '+m.created_at;bubble.appendChild(meta);
+      }
+      row.appendChild(bubble);scrollBox.appendChild(row);
+    });
+    if(shouldStick||messages.length!==lastCount){scrollBox.scrollTop=scrollBox.scrollHeight;}
+    lastCount=messages.length;
+  }
+  async function refreshMessages(){
+    if(isSending)return;
+    try{const response=await fetch(apiUrl,{headers:{'X-Requested-With':'XMLHttpRequest'},cache:'no-store'});if(!response.ok)return;const data=await response.json();if(data.count!==lastCount){renderMessages(data.messages||[]);}}catch(e){}
+  }
+  renderMessages(initialMessages);
+  setInterval(refreshMessages,2500);
+  if(ta){const maxHeight=140;const resize=function(){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,maxHeight)+'px';};ta.addEventListener('input',resize);ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(form)form.requestSubmit();}});resize();}
+  if(attachBtn&&fileInput){attachBtn.addEventListener('click',function(){fileInput.click();});}
+  if(form){form.addEventListener('submit',async function(event){
+    event.preventDefault();
+    const formData=new FormData(form);
+    const hasText=String(formData.get('text')||'').trim().length>0;
+    const hasFile=Boolean(fileInput&&fileInput.files&&fileInput.files.length);
+    if(!hasText&&!hasFile)return;
+    isSending=true;
+    try{const response=await fetch(sendUrl,{method:'POST',body:formData,headers:{'X-Requested-With':'XMLHttpRequest'}});if(!response.ok){form.submit();return;}const data=await response.json();renderMessages(data.messages||[]);if(ta){ta.value='';ta.style.height='auto';}if(fileInput){fileInput.value='';}}catch(e){form.submit();}finally{isSending=false;}
+  });}
+})();
+</script>
+{% endblock %}

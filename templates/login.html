@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход — JobGuard{% endblock %}
+
+{% block content %}
+<style>
+    .login-redesign {
+        min-height: calc(100vh - 150px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 0 3rem;
+    }
+
+    .login-redesign__shell {
+        width: min(1080px, 100%);
+        display: grid;
+        grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 28px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.82);
+        box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
+        backdrop-filter: blur(18px);
+    }
+
+    .login-redesign__info {
+        padding: 3rem;
+        background:
+            radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.22), transparent 32%),
+            radial-gradient(circle at 85% 65%, rgba(14, 165, 233, 0.18), transparent 34%),
+            linear-gradient(145deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.92));
+        border-right: 1px solid rgba(148, 163, 184, 0.22);
+    }
+
+    .login-redesign__brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        color: #4f46e5;
+        font-weight: 800;
+        font-size: 1.15rem;
+        margin-bottom: 2.4rem;
+    }
+
+    .login-redesign__title {
+        max-width: 360px;
+        color: #0f172a;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+        margin-bottom: 1rem;
+    }
+
+    .login-redesign__text {
+        max-width: 430px;
+        color: #475569;
+        font-size: 1rem;
+        line-height: 1.65;
+        margin-bottom: 2rem;
+    }
+
+    .login-redesign__steps {
+        display: grid;
+        gap: 0.8rem;
+    }
+
+    .login-redesign__step {
+        display: grid;
+        grid-template-columns: 42px 1fr;
+        gap: 0.85rem;
+        align-items: flex-start;
+        padding: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.72);
+    }
+
+    .login-redesign__step-icon {
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: rgba(79, 70, 229, 0.1);
+        color: #4f46e5;
+        font-size: 1.1rem;
+    }
+
+    .login-redesign__step-title {
+        color: #0f172a;
+        font-weight: 800;
+        margin-bottom: 0.2rem;
+    }
+
+    .login-redesign__step-text {
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.45;
+        margin: 0;
+    }
+
+    .login-redesign__form {
+        padding: 3rem;
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .login-redesign__form-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .login-redesign__form h1 {
+        color: #0f172a;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin: 0 0 0.35rem;
+    }
+
+    .login-redesign__form-subtitle {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .login-redesign .input-group-text {
+        background: #f8fafc !important;
+        color: #4f46e5 !important;
+        border-color: rgba(148, 163, 184, 0.3) !important;
+    }
+
+    .login-redesign .form-control {
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        border-color: rgba(148, 163, 184, 0.3) !important;
+        min-height: 48px;
+    }
+
+    .login-redesign .form-control::placeholder {
+        color: #94a3b8 !important;
+    }
+
+    .login-redesign__note {
+        padding: 1rem;
+        border: 1px solid rgba(79, 70, 229, 0.16);
+        border-radius: 18px;
+        background: rgba(79, 70, 229, 0.06);
+        color: #475569;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    html[data-theme="dark"] .login-redesign__shell,
+    body[data-theme="dark"] .login-redesign__shell,
+    .theme-dark .login-redesign__shell {
+        background: rgba(15, 23, 42, 0.88);
+        border-color: rgba(99, 102, 241, 0.24);
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+    }
+
+    html[data-theme="dark"] .login-redesign__info,
+    body[data-theme="dark"] .login-redesign__info,
+    .theme-dark .login-redesign__info {
+        background:
+            radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.22), transparent 32%),
+            radial-gradient(circle at 85% 65%, rgba(14, 165, 233, 0.14), transparent 34%),
+            linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.92));
+        border-right-color: rgba(99, 102, 241, 0.24);
+    }
+
+    html[data-theme="dark"] .login-redesign__form,
+    body[data-theme="dark"] .login-redesign__form,
+    .theme-dark .login-redesign__form {
+        background: rgba(15, 23, 42, 0.94);
+    }
+
+    html[data-theme="dark"] .login-redesign__title,
+    html[data-theme="dark"] .login-redesign__form h1,
+    html[data-theme="dark"] .login-redesign__step-title,
+    body[data-theme="dark"] .login-redesign__title,
+    body[data-theme="dark"] .login-redesign__form h1,
+    body[data-theme="dark"] .login-redesign__step-title,
+    .theme-dark .login-redesign__title,
+    .theme-dark .login-redesign__form h1,
+    .theme-dark .login-redesign__step-title {
+        color: #f8fafc;
+    }
+
+    html[data-theme="dark"] .login-redesign__text,
+    html[data-theme="dark"] .login-redesign__form-subtitle,
+    html[data-theme="dark"] .login-redesign__step-text,
+    body[data-theme="dark"] .login-redesign__text,
+    body[data-theme="dark"] .login-redesign__form-subtitle,
+    body[data-theme="dark"] .login-redesign__step-text,
+    .theme-dark .login-redesign__text,
+    .theme-dark .login-redesign__form-subtitle,
+    .theme-dark .login-redesign__step-text {
+        color: #94a3b8;
+    }
+
+    html[data-theme="dark"] .login-redesign__step,
+    body[data-theme="dark"] .login-redesign__step,
+    .theme-dark .login-redesign__step {
+        background: rgba(30, 41, 59, 0.72);
+        border-color: rgba(99, 102, 241, 0.18);
+    }
+
+    html[data-theme="dark"] .login-redesign .input-group-text,
+    body[data-theme="dark"] .login-redesign .input-group-text,
+    .theme-dark .login-redesign .input-group-text {
+        background: rgba(15, 23, 42, 0.95) !important;
+        border-color: rgba(99, 102, 241, 0.28) !important;
+    }
+
+    html[data-theme="dark"] .login-redesign .form-control,
+    body[data-theme="dark"] .login-redesign .form-control,
+    .theme-dark .login-redesign .form-control {
+        background: rgba(15, 23, 42, 0.95) !important;
+        color: #f8fafc !important;
+        border-color: rgba(99, 102, 241, 0.28) !important;
+    }
+
+    html[data-theme="dark"] .login-redesign__note,
+    body[data-theme="dark"] .login-redesign__note,
+    .theme-dark .login-redesign__note {
+        background: rgba(99, 102, 241, 0.12);
+        border-color: rgba(99, 102, 241, 0.24);
+        color: #cbd5e1;
+    }
+
+    @media (max-width: 992px) {
+        .login-redesign__shell {
+            grid-template-columns: 1fr;
+        }
+
+        .login-redesign__info {
+            border-right: 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .login-redesign {
+            padding: 0.5rem 0 2rem;
+        }
+
+        .login-redesign__info,
+        .login-redesign__form {
+            padding: 1.4rem;
+        }
+
+        .login-redesign__form-head {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<section class="login-redesign">
+    <div class="login-redesign__shell">
+        <div class="login-redesign__info">
+            <div class="login-redesign__brand">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span>JobGuard</span>
+            </div>
+
+            <h2 class="login-redesign__title">Рабочее пространство для заказов и исполнителей.</h2>
+            <p class="login-redesign__text">
+                Войдите в аккаунт, чтобы продолжить работу с заказами, откликами, чатами, балансом и обращениями в поддержку.
+            </p>
+
+            <div class="login-redesign__steps">
+                <div class="login-redesign__step">
+                    <div class="login-redesign__step-icon"><i class="bi bi-briefcase"></i></div>
+                    <div>
+                        <div class="login-redesign__step-title">Заказы и отклики</div>
+                        <p class="login-redesign__step-text">Заказчики публикуют задачи, студенты отправляют отклики и обсуждают детали в чате.</p>
+                    </div>
+                </div>
+
+                <div class="login-redesign__step">
+                    <div class="login-redesign__step-icon"><i class="bi bi-shield-check"></i></div>
+                    <div>
+                        <div class="login-redesign__step-title">Защита сделки</div>
+                        <p class="login-redesign__step-text">В проекте используется демонстрационная логика резерва, статусов оплаты и решения спорных ситуаций.</p>
+                    </div>
+                </div>
+
+                <div class="login-redesign__step">
+                    <div class="login-redesign__step-icon"><i class="bi bi-chat-dots"></i></div>
+                    <div>
+                        <div class="login-redesign__step-title">Коммуникация внутри сервиса</div>
+                        <p class="login-redesign__step-text">Переписка, уведомления и поддержка собраны в одном интерфейсе.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-redesign__form">
+            <div class="login-redesign__form-head">
+                <div>
+                    <h1 class="h3">Вход</h1>
+                    <p class="login-redesign__form-subtitle">Введите логин, email и пароль от аккаунта.</p>
+                </div>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-primary rounded-3 flex-shrink-0">Создать аккаунт</a>
+            </div>
+
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.username.label(class="form-label text-muted") }}
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        {{ form.username(class="form-control", placeholder="Логин или email") }}
+                    </div>
+                    {% if form.username.errors %}
+                        <div class="text-danger small mt-1">{{ form.username.errors[0] }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label text-muted") }}
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                        {{ form.password(class="form-control", placeholder="Пароль") }}
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="text-danger small mt-1">{{ form.password.errors[0] }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid mt-4">
+                    {{ form.submit(class="btn btn-primary btn-lg rounded-3") }}
+                </div>
+            </form>
+
+            <div class="login-redesign__note mt-4">
+                <div class="fw-semibold mb-1">После входа</div>
+                <div>Студент увидит свои отклики, переписки и баланс. Заказчик — свои объявления, отклики студентов и финансовые операции по заказам.</div>
+            </div>
+
+            <div class="small text-muted mt-3">
+                Нет аккаунта? <a href="{{ url_for('register') }}" class="text-primary text-decoration-none fw-semibold">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация — JobGuard{% endblock %}
+
+{% block content %}
+
+<div class="auth-shell">
+    <div class="auth-card shadow-lg">
+        <div class="row g-0">
+            <div class="col-lg-5 d-none d-lg-block auth-hero p-4 p-xl-5">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="bi bi-lightning-charge-fill fs-3 text-primary me-2"></i>
+                    <div class="fw-bold fs-4 text-primary">JobGuard</div>
+                </div>
+                <h2 class="fw-bold mb-3">Создай аккаунт</h2>
+                <p class="text-muted mb-4">
+                    Студенты получают заказы для практики и развития навыков, заказчики публикуют IT-задачи с безопасной сделкой.
+                </p>
+
+                <div class="kpi p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small">Приоритет</div>
+                            <div class="fw-bold fs-5">Обучающиеся студенты</div>
+                        </div>
+                        <i class="bi bi-mortarboard fs-2 text-accent"></i>
+                    </div>
+                </div>
+
+                <div class="kpi p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small">Безопасность</div>
+                            <div class="fw-bold fs-5">Резерв + отзывы</div>
+                        </div>
+                        <i class="bi bi-shield-check fs-2 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 p-4 p-xl-5">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <h1 class="h3 fw-bold mb-1">Регистрация</h1>
+                        <div class="text-muted">Заполните данные аккаунта</div>
+                    </div>
+                    <a class="btn btn-outline-primary rounded-3 d-none d-sm-inline-flex" href="{{ url_for('login') }}">Войти</a>
+                </div>
+
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.username.label(class="form-label text-muted") }}
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-dark-900 border-primary/30 text-muted"><i class="bi bi-person"></i></span>
+                            {{ form.username(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="Логин") }}
+                        </div>
+                        {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors[0] }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label text-muted") }}
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-dark-900 border-primary/30 text-muted"><i class="bi bi-envelope"></i></span>
+                            {{ form.email(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="email@example.com") }}
+                        </div>
+                        {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors[0] }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.role.label(class="form-label text-muted") }}
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-dark-900 border-primary/30 text-muted"><i class="bi bi-people"></i></span>
+                            {{ form.role(class="form-select bg-dark-900 border-primary/30 text-light", id="roleSelect") }}
+                        </div>
+                        {% if form.role.errors %}<div class="text-danger small mt-1">{{ form.role.errors[0] }}</div>{% endif %}
+                    </div>
+
+                    <div id="studentFields" class="p-3 rounded-4 bg-dark-900 border border-primary/30 mb-3">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-mortarboard text-primary"></i>
+                            <div>
+                                <div class="fw-semibold">Данные студента</div>
+                                <div class="text-muted small">Обучающиеся студенты будут отображаться в откликах выше остальных.</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form.student_status.label(class="form-label text-muted") }}
+                                {{ form.student_status(class="form-select bg-dark-900 border-primary/30 text-light") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.age.label(class="form-label text-muted") }}
+                                {{ form.age(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="Например: 20") }}
+                                {% if form.age.errors %}<div class="text-danger small mt-1">{{ form.age.errors[0] }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.institution.label(class="form-label text-muted") }}
+                                {{ form.institution(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="Например: МГТУ, СПбГУ, ВШЭ") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.faculty.label(class="form-label text-muted") }}
+                                {{ form.faculty(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="Факультет / направление") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.education_level.label(class="form-label text-muted") }}
+                                {{ form.education_level(class="form-select bg-dark-900 border-primary/30 text-light") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.course.label(class="form-label text-muted") }}
+                                {{ form.course(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="1–6") }}
+                                {% if form.course.errors %}<div class="text-danger small mt-1">{{ form.course.errors[0] }}</div>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label text-muted") }}
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-dark-900 border-primary/30 text-muted"><i class="bi bi-shield-lock"></i></span>
+                            {{ form.password(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="Пароль") }}
+                        </div>
+                        {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors[0] }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.confirm_password.label(class="form-label text-muted") }}
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-dark-900 border-primary/30 text-muted"><i class="bi bi-check2-circle"></i></span>
+                            {{ form.confirm_password(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="Повторите пароль") }}
+                        </div>
+                        {% if form.confirm_password.errors %}<div class="text-danger small mt-1">{{ form.confirm_password.errors[0] }}</div>{% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        {{ form.submit(class="btn btn-primary btn-lg rounded-3") }}
+                        <a class="btn btn-outline-primary btn-lg rounded-3 d-sm-none" href="{{ url_for('login') }}">Войти</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const roleSelect = document.getElementById('roleSelect');
+        const studentFields = document.getElementById('studentFields');
+        function toggleStudentFields() {
+            if (!roleSelect || !studentFields) return;
+            studentFields.style.display = roleSelect.value === 'student' ? 'block' : 'none';
+        }
+        if (roleSelect) {
+            roleSelect.addEventListener('change', toggleStudentFields);
+            toggleStudentFields();
+        }
+    })();
+</script>
+
+{% endblock %}

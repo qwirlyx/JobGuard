@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Заказы — JobGuard{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">Все заказы</h1>
+        <div class="text-muted">Ищи по названию, описанию и тегам. Отклик — в карточке заказа.</div>
+    </div>
+
+    {% if current_user.is_authenticated and current_role == 'customer' %}
+        <a class="btn btn-primary rounded-3" href="{{ url_for('order_new') }}">
+            <i class="bi bi-plus-lg me-1"></i> Создать заказ
+        </a>
+    {% endif %}
+</div>
+
+{% if q or tag %}
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        {% if q %}
+            <span class="badge bg-dark-900 border border-primary/30">Поиск: <span class="text-light">{{ q }}</span></span>
+        {% endif %}
+        {% if tag %}
+            <span class="badge bg-dark-900 border border-primary/30">Тег: <span class="text-light">{{ tag }}</span></span>
+        {% endif %}
+        <a class="badge bg-primary-subtle text-primary text-decoration-none" href="{{ url_for('orders_list') }}">Сбросить</a>
+    </div>
+{% endif %}
+
+<div class="row g-4">
+    {% if orders|length == 0 %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="fw-semibold mb-1">Ничего не найдено</div>
+                    <div class="text-muted">Попробуй другой запрос или убери фильтры.</div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% for order in orders %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">
+                            <a class="text-light text-decoration-none" href="{{ url_for('order_detail', order_id=order.id) }}">{{ order.title }}</a>
+                        </h5>
+                        <div class="text-end">
+                            <div>
+                                <span class="badge bg-primary-subtle text-primary fs-6">{{ money(order.price) }} ₽</span>
+                            </div>
+                            <div class="mt-1">
+                                <span class="badge {{ status_class(order.status) }}">{{ status_label(order.status) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-muted mb-3">{{ order.description }}</p>
+
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        {% for t in order.tags %}
+                            <a class="badge bg-dark-900 border border-primary/30 text-decoration-none" href="{{ url_for('orders_list', tag=t) }}">{{ t }}</a>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Срок: {{ order.deadline_days }} дней</small>
+                        <a href="{{ url_for('order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary rounded-3">Открыть</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+

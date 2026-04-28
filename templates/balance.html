@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Баланс — JobGuard{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">Баланс</h1>
+        {% if role == 'customer' %}
+            <div class="text-muted">Финансы заказчика: пополнения объявлений, комиссии, замороженные суммы и возвраты.</div>
+        {% else %}
+            <div class="text-muted">Баланс исполнителя: резерв, начисления и вывод средств.</div>
+        {% endif %}
+    </div>
+</div>
+
+{% if role == 'customer' %}
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="card h-100"><div class="card-body p-4">
+                <div class="text-muted small mb-1">Доступно к возврату/выводу</div>
+                <div class="display-6 fw-bold text-success">{{ money(wallet.available) }} ₽</div>
+                <div class="text-muted mt-2">Это возвращённые бюджеты отменённых объявлений.</div>
+            </div></div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card h-100"><div class="card-body p-4">
+                <div class="text-muted small mb-1">Заморожено в заказах</div>
+                <div class="display-6 fw-bold text-info">{{ money(customer_stats.frozen_total) }} ₽</div>
+                <div class="text-muted mt-2">Бюджеты активных объявлений до завершения или отмены.</div>
+            </div></div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card h-100"><div class="card-body p-4">
+                <div class="text-muted small mb-1">Всего оплачено</div>
+                <div class="display-6 fw-bold text-primary">{{ money(customer_stats.funded_total) }} ₽</div>
+                <div class="text-muted mt-2">Бюджеты заказов вместе с комиссией публикации.</div>
+            </div></div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card h-100"><div class="card-body p-4">
+                <div class="text-muted small mb-1">Комиссия площадки</div>
+                <div class="display-6 fw-bold text-warning">{{ money(customer_stats.fee_total) }} ₽</div>
+                <div class="text-muted mt-2">300 ₽ + 3% от бюджета каждого пополненного объявления.</div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Вывести возвращённые средства</h2>
+                    <form method="POST" action="{{ url_for('balance_withdraw') }}">
+                        <label class="form-label text-muted">Сумма вывода</label>
+                        <input type="number" name="amount" min="1" max="{{ wallet.available }}" class="form-control bg-dark-900 border-primary/30 text-light" placeholder="Например: 10000" required>
+                        <div class="text-muted small mt-2">Для заказчика возврат средств выводится без комиссии сервиса.</div>
+                        <button class="btn btn-primary rounded-3 w-100 mt-3" type="submit">Создать заявку</button>
+                    </form>
+                    <div class="alert alert-info mt-3 mb-0">Это демонстрационная заявка. В реальной версии здесь будет подключение выплат через платёжного провайдера.</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Финансы по объявлениям</h2>
+                    {% if customer_orders|length == 0 %}
+                        <div class="text-muted">Пополненных объявлений пока нет.</div>
+                    {% else %}
+                        <div class="d-flex flex-column gap-3">
+                            {% for order in customer_orders %}
+                                {% if order.payment_status in ['funded', 'reserved', 'paid', 'refunded'] %}
+                                    <div class="p-3 rounded-4 bg-dark-900 border border-primary/30">
+                                        <div class="d-flex justify-content-between gap-3">
+                                            <div>
+                                                <div class="fw-semibold"><a href="{{ url_for('order_detail', order_id=order.id) }}" class="text-light text-decoration-none">#{{ order.id }} · {{ order.title }}</a></div>
+                                                <div class="text-muted small">{{ payment_status_text(order.payment_status) }}</div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="fw-semibold">{{ money(order.fund_total_amount) }} ₽</div>
+                                                <div class="text-muted small">Бюджет: {{ money(order.funded_amount) }} ₽</div>
+                                                <div class="text-muted small">Комиссия: {{ money(order.platform_fee_amount) }} ₽</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body p-4"><div class="text-muted small mb-1">Доступно к выводу</div><div class="display-6 fw-bold text-success">{{ money(wallet.available) }} ₽</div><div class="text-muted mt-2">Эти средства можно вывести с учётом комиссии сервиса.</div></div></div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body p-4"><div class="text-muted small mb-1">В резерве</div><div class="display-6 fw-bold text-info">{{ money(wallet.reserved) }} ₽</div><div class="text-muted mt-2">Средства зарезервированы по заказам и недоступны к выводу до принятия работы.</div></div></div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body p-4"><div class="text-muted small mb-1">Уже выведено</div><div class="display-6 fw-bold text-primary">{{ money(wallet.withdrawn) }} ₽</div><div class="text-muted mt-2">Комиссия сервиса: {{ fee_percent }}%.</div></div></div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Создать заявку на вывод</h2>
+                    <form method="POST" action="{{ url_for('balance_withdraw') }}">
+                        <label class="form-label text-muted">Сумма вывода</label>
+                        <input type="number" name="amount" min="1" max="{{ wallet.available }}" class="form-control bg-dark-900 border-primary/30 text-light" placeholder="Например: 10000" required>
+                        <div class="text-muted small mt-2">Комиссия сервиса удерживается из суммы вывода: {{ fee_percent }}%.</div>
+                        <button class="btn btn-primary rounded-3 w-100 mt-3" type="submit">Создать заявку</button>
+                    </form>
+                    <div class="alert alert-info mt-3 mb-0">Это демонстрационная заявка. В реальной версии здесь будет подключение выплат через платёжного провайдера.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">История операций</h2>
+                    {% if wallet.operations|length == 0 %}
+                        <div class="text-muted">Операций пока нет.</div>
+                    {% else %}
+                        <div class="d-flex flex-column gap-3">
+                            {% for op in wallet.operations %}
+                                <div class="p-3 rounded-4 bg-dark-900 border border-primary/30">
+                                    <div class="d-flex justify-content-between gap-3">
+                                        <div>
+                                            <div class="fw-semibold">{{ op.description }}</div>
+                                            <div class="text-muted small">{{ op.created_at }}</div>
+                                            {% if op.order_id %}<div class="text-muted small">Заказ #{{ op.order_id }}</div>{% endif %}
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-semibold">{{ money(op.amount) }} ₽</div>
+                                            {% if op.commission %}
+                                                <div class="text-muted small">Комиссия: {{ money(op.commission) }} ₽</div>
+                                                <div class="text-muted small">К получению: {{ money(op.payout) }} ₽</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

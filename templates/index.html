@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+
+{% block title %}JobGuard — IT-фриланс для студентов{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section с анимированным градиентом -->
+<section class="hero-section position-relative overflow-hidden">
+    <div class="hero-bg"></div>
+    <div class="hero-particles" id="particles"></div>
+
+    <div class="container position-relative z-2">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center">
+                <div class="hero-content">
+                    <span class="hero-badge mb-4 d-inline-block">
+                        <i class="bi bi-lightning-charge-fill me-2"></i>Платформа для студентов IT
+                    </span>
+
+                    <h1 class="hero-title mb-4">
+                        Находи проекты.<br>
+                        <span class="text-gradient">Зарабатывай</span> опыт.
+                    </h1>
+
+                    <p class="hero-subtitle mb-5">
+                        Реальные заказы от реальных компаний. Без посредников.<br class="d-none d-md-block">
+                        От первого коммита до первого заработка.
+                    </p>
+
+                    <div class="hero-actions d-flex flex-wrap justify-content-center gap-3">
+                        <a href="{{ url_for('orders_list') }}" class="btn btn-hero-primary btn-lg">
+                            <span>Найти заказ</span>
+                            <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                        {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('register') }}" class="btn btn-hero-outline btn-lg">
+                            Стать исполнителем
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator">
+        <div class="mouse"></div>
+    </div>
+</section>
+
+<!-- Stats Section с анимированными счетчиками -->
+<section class="stats-section py-5">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item" data-count="{{ platform_stats.active_orders }}">
+                <div class="stat-number">
+                    <span class="counter">0</span>
+                    <span class="stat-suffix"></span>
+                </div>
+                <div class="stat-label">Активных заказов</div>
+                <div class="stat-trend">
+                    <i class="bi bi-briefcase-fill"></i> По данным сервиса
+                </div>
+            </div>
+
+            <div class="stat-item" data-count="{{ platform_stats.students_count }}">
+                <div class="stat-number">
+                    <span class="counter">0</span>
+                    <span class="stat-suffix"></span>
+                </div>
+                <div class="stat-label">Студентов на платформе</div>
+                <div class="stat-trend">
+                    <i class="bi bi-people-fill"></i> Зарегистрировано студентов
+                </div>
+            </div>
+
+            <div class="stat-item" data-count="{{ platform_stats.success_rate }}" data-suffix="%">
+                <div class="stat-number">
+                    <span class="counter">0</span>
+                    <span class="stat-suffix">%</span>
+                </div>
+                <div class="stat-label">Успешных сделок</div>
+                <div class="stat-trend">
+                    <i class="bi bi-check-circle-fill"></i> Завершённые сделки
+                </div>
+            </div>
+
+            <div class="stat-item" data-count="{{ platform_stats.avg_rating }}" data-suffix="/5" data-decimal="true">
+                <div class="stat-number">
+                    <span class="counter">0</span>
+                    <span class="stat-suffix">/5</span>
+                </div>
+                <div class="stat-label">Средняя оценка</div>
+                <div class="stat-trend">
+                    <i class="bi bi-star-fill"></i> Отзывов: {{ platform_stats.total_reviews }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Заказы Section -->
+<section class="orders-section py-5">
+    <div class="container">
+        <div class="section-header d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="section-title">Свежие заказы</h2>
+                <p class="section-subtitle text-muted">Подобрано специально для тебя</p>
+            </div>
+            <a href="{{ url_for('orders_list') }}" class="btn btn-outline-primary">
+                Все заказы <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="orders-grid">
+            {% for order in orders %}
+            <article class="order-card">
+                <div class="order-card-header">
+                    <div class="order-price">{{ "{:,.0f}".format(order.price).replace(",", " ") }} ₽</div>
+                    <div class="order-deadline">
+                        <i class="bi bi-clock me-1"></i> {{ order.deadline_days }} дн.
+                    </div>
+                </div>
+
+                <h3 class="order-title">
+                    <a href="{{ url_for('order_detail', order_id=order.id) }}">{{ order.title }}</a>
+                </h3>
+
+                <p class="order-description">{{ order.description[:120] }}{% if order.description|length > 120 %}...{% endif %}</p>
+
+                <div class="order-tags">
+                    {% for t in order.tags %}
+                    <a href="{{ url_for('orders_list', tag=t) }}" class="order-tag">{{ t }}</a>
+                    {% endfor %}
+                </div>
+
+                <div class="order-footer">
+                    <div class="order-meta">
+                        <span class="order-status open">{{ status_label(order.status) }}</span>
+                        <span class="order-dot"></span>
+                        <span class="order-date">{{ order.created_at }}</span>
+                    </div>
+                    <a href="{{ url_for('order_detail', order_id=order.id) }}" class="order-link">
+                        Подробнее <i class="bi bi-arrow-right-short"></i>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h2 class="cta-title">Готов начать зарабатывать?</h2>
+                    <p class="cta-text">Присоединяйся к тысячам студентов, которые уже нашли свой первый проект.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+                        Создать аккаунт
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('orders_list') }}" class="btn btn-light btn-lg">
+                        Найти заказ
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4 class="feature-title">Безопасная сделка</h4>
+                    <p class="feature-text">Гарантия оплаты через систему. Деньги замораживаются до выполнения работы.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <h4 class="feature-title">Быстрый старт</h4>
+                    <p class="feature-text">Регистрация за 2 минуты. Первые отклики уже через час.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <h4 class="feature-title">Рейтинг и отзывы</h4>
+                    <p class="feature-text">Собирай портфолио и отзывы. Чем выше рейтинг — тем больше заказов.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Анимированные частицы на фоне hero
+(function() {
+    const particles = document.getElementById('particles');
+    if (!particles) return;
+
+    const count = 25;
+    for (let i = 0; i < count; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'particle';
+        dot.style.left = Math.random() * 100 + '%';
+        dot.style.top = Math.random() * 100 + '%';
+        dot.style.animationDelay = Math.random() * 20 + 's';
+        dot.style.animationDuration = (15 + Math.random() * 10) + 's';
+        particles.appendChild(dot);
+    }
+})();
+
+// Анимированные счетчики
+const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '0px'
+};
+
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const item = entry.target;
+            const counter = item.querySelector('.counter');
+            const target = parseFloat(item.dataset.count);
+            const suffix = item.dataset.suffix || '';
+            const isDecimal = item.dataset.decimal === 'true';
+            const duration = 2000;
+            const startTime = performance.now();
+
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                const current = target * easeProgress;
+
+                if (isDecimal) {
+                    counter.textContent = current.toFixed(1);
+                } else {
+                    counter.textContent = Math.floor(current).toLocaleString('ru-RU');
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+
+            requestAnimationFrame(updateCounter);
+            counterObserver.unobserve(item);
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.stat-item').forEach(item => {
+    counterObserver.observe(item);
+});
+
+// Появление карточек при скролле
+const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => {
+                entry.target.classList.add('visible');
+            }, index * 100);
+            cardObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.order-card').forEach(card => {
+    cardObserver.observe(card);
+});
+</script>
+
+{% endblock %}

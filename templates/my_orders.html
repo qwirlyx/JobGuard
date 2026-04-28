@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои заказы — JobGuard{% endblock %}
+
+{% block content %}
+
+<style>
+    .no-card-hover .card,
+    .no-card-hover .card:hover,
+    .no-card-hover .glass-card,
+    .no-card-hover .glass-card:hover {
+        transform: none !important;
+        transition: none !important;
+    }
+</style>
+
+<div class="no-card-hover">
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">Мои заказы</h1>
+        <div class="text-muted">Публикуй задачи, пополняй бюджет объявления и смотри отклики студентов.</div>
+    </div>
+    <a class="btn btn-primary rounded-3" href="{{ url_for('order_new') }}"><i class="bi bi-plus-lg me-1"></i> Создать заказ</a>
+</div>
+
+<div class="row g-4">
+    {% if orders|length == 0 %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="fw-semibold mb-1">У тебя пока нет заказов</div>
+                    <div class="text-muted">Создай первый заказ — студенты начнут откликаться.</div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% for order in orders %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                        <div>
+                            <div class="text-muted small mb-1">Заказ #{{ order.id }}</div>
+                            <div class="fw-semibold fs-5">
+                                <a class="text-light text-decoration-none" href="{{ url_for('order_detail', order_id=order.id) }}">{{ order.title }}</a>
+                            </div>
+                            <div class="text-muted mt-2">{{ order.description }}</div>
+
+                            {% if order.status == 'review' and order.submitted_url %}
+                                <div class="mt-3 p-3 rounded-4 bg-dark-900 border border-primary/30">
+                                    <div class="text-muted small mb-1">Работа на проверке</div>
+                                    <a href="{{ order.submitted_url }}" target="_blank" rel="noopener" class="link-primary">{{ order.submitted_url }}</a>
+                                    {% if order.submitted_comment %}
+                                        <div class="text-muted small mt-2 mb-1">Комментарий исполнителя</div>
+                                        <div>{{ order.submitted_comment }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            {% if order.status == 'dispute' %}
+                                <div class="mt-3 p-3 rounded-4 bg-dark-900 border border-danger">
+                                    <div class="fw-semibold text-danger mb-1"><i class="bi bi-shield-exclamation me-1"></i>Открыт спор</div>
+                                    <div class="text-muted small">
+                                        Средства по заказу заморожены до решения администратора.
+                                        {% if order.dispute_reason %}<br>Причина: {{ order.dispute_reason }}{% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                {% for t in order.tags %}
+                                    <span class="badge bg-dark-900 border border-primary/30">{{ t }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="badge bg-primary-subtle text-primary fs-6 mb-1">{{ money(order.price) }} ₽</div>
+                            <div class="text-muted">Срок: {{ order.deadline_days }} дней</div>
+                            <div class="text-muted small mt-1">Резерв 50%: {{ money(order.reserve_amount) }} ₽</div>
+                            <div class="mt-1">
+                                <span class="badge {{ payment_status_class(order.payment_status) }}">
+                                    {{ payment_status_text(order.payment_status) }}
+                                </span>
+                            </div>
+                            {% if order.status in ['open', 'has_responses'] and order.payment_status == 'not_funded' %}
+                                <div class="mt-2">
+                                    <a class="btn btn-sm btn-primary rounded-3" href="{{ url_for('order_fund', order_id=order.id) }}">Пополнить бюджет</a>
+                                </div>
+                            {% endif %}
+
+                            {% if order.status in ['open', 'has_responses'] and order.payment_status in ['not_funded', 'refunded'] %}
+                                <div class="mt-2 d-flex flex-column gap-2 align-items-end">
+                                    <a class="btn btn-sm btn-outline-primary rounded-3" href="{{ url_for('order_edit', order_id=order.id) }}">
+                                        <i class="bi bi-pencil-square me-1"></i>Редактировать
+                                    </a>
+                                    <form method="POST" action="{{ url_for('order_cancel', order_id=order.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-3" onclick="return confirm('Отменить этот заказ? Отклики по нему будут закрыты.');">
+                                            <i class="bi bi-x-circle me-1"></i>Отменить
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+
+                            <div class="mt-2">
+                                {% if order.status == 'in_progress' %}
+                                    <span class="badge bg-info text-dark">В работе</span>
+                                {% elif order.status == 'review' %}
+                                    <span class="badge bg-primary">На проверке</span>
+                                {% elif order.status == 'done' %}
+                                    <span class="badge bg-secondary">Завершён</span>
+                                {% elif order.status in ['cancelled', 'cancelled_by_customer', 'cancelled_by_student', 'cancel_requested', 'dispute'] %}
+                                    <span class="badge bg-danger">{{ status_label(order.status) }}</span>
+                                {% elif order.status == 'has_responses' %}
+                                    <span class="badge bg-warning text-dark">Есть отклики</span>
+                                {% else %}
+                                    <span class="badge bg-success">Открыт</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-primary/30 my-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-semibold">Отклики</div>
+                        {% if order.status == 'in_progress' %}
+                            <div class="d-flex flex-column align-items-end gap-2">
+                                <span class="badge bg-info text-dark">50% в резерве у исполнителя</span>
+                                <span class="badge bg-info text-dark">Исполнитель работает над заказом</span>
+                                <form method="POST" action="{{ url_for('order_cancel_active', order_id=order.id) }}" class="d-flex flex-column gap-2 align-items-end">
+                                    <textarea name="reason" rows="2" class="form-control form-control-sm bg-dark-900 border-primary/30 text-light" placeholder="Причина отмены" style="min-width: 220px;"></textarea>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-3" {% if not order_deadline_passed(order) %}disabled{% endif %} onclick="return confirm('Отменить активный заказ и вернуть бюджет?');">
+                                        Отменить активный заказ
+                                    </button>
+                                    {% if not order_deadline_passed(order) %}
+                                        <div class="text-muted small">Доступно после срока: {{ order_deadline_text(order) }}</div>
+                                    {% endif %}
+                                </form>
+
+                                <form method="POST" action="{{ url_for('order_open_dispute', order_id=order.id) }}" class="d-flex flex-column gap-2 align-items-end">
+                                    <textarea name="reason" rows="2" class="form-control form-control-sm bg-dark-900 border-danger/30 text-light" placeholder="Причина спора" style="min-width: 220px;"></textarea>
+                                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-3" onclick="return confirm('Открыть спор по этому заказу?');">
+                                        Открыть спор
+                                    </button>
+                                </form>
+                            </div>
+                        {% elif order.status == 'review' %}
+                            <div class="d-flex flex-column align-items-end gap-2">
+                                {% if order.submitted_url %}
+                                    <a href="{{ order.submitted_url }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary rounded-3">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i>Открыть работу
+                                    </a>
+                                {% endif %}
+                                <form method="POST" action="{{ url_for('order_close', order_id=order.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-success rounded-3" onclick="return confirm('Принять работу и завершить заказ?');">Принять работу</button>
+                                </form>
+
+                                <form method="POST" action="{{ url_for('order_open_dispute', order_id=order.id) }}" class="d-flex flex-column gap-2 align-items-end">
+                                    <textarea name="reason" rows="2" class="form-control form-control-sm bg-dark-900 border-danger/30 text-light" placeholder="Почему работа не принимается?" style="min-width: 220px;"></textarea>
+                                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-3" onclick="return confirm('Открыть спор по этому заказу?');">
+                                        Открыть спор
+                                    </button>
+                                </form>
+                            </div>
+                        {% elif order.status == 'dispute' %}
+                            <div class="alert alert-danger mb-0">
+                                По заказу открыт спор. Средства заморожены до решения администратора.
+                            </div>
+                        {% elif order.status == 'done' and order.executor %}
+                            <div class="d-flex flex-column align-items-end gap-2">
+                                {% if order.id in reviewed_order_ids %}
+                                    <span class="badge bg-success">Отзыв исполнителю оставлен</span>
+                                {% else %}
+                                    <a href="{{ url_for('leave_review', order_id=order.id) }}" class="btn btn-sm btn-outline-warning rounded-3">
+                                        <i class="bi bi-star me-1"></i>Оставить отзыв исполнителю
+                                    </a>
+                                {% endif %}
+                                <a href="{{ url_for('public_profile', username=order.executor) }}" class="btn btn-sm btn-outline-primary rounded-3">
+                                    Профиль исполнителя
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% set apps = apps_by_order.get(order.id, []) %}
+                    {% if apps|length == 0 %}
+                        <div class="text-muted">Откликов пока нет.</div>
+                    {% else %}
+                        <div class="row g-3">
+                            {% for a in apps %}
+                                <div class="col-lg-6">
+                                    <div class="p-3 rounded-4" style="background: rgba(2, 8, 23, 0.35); border: 1px solid rgba(168, 85, 247, 0.18);">
+                                        <div class="d-flex justify-content-between gap-3 align-items-start">
+                                            <div>
+                                                <div class="fw-semibold"><a class="text-light text-decoration-none" href="{{ url_for('public_profile', username=a.username) }}">{{ user_display_name(a.username) }}</a></div>
+                                                <div class="text-muted small">{{ a.created_at }}</div>
+                                            </div>
+                                            <div class="text-end">
+                                                {% if a.status == 'accepted' %}
+                                                    <span class="badge bg-success">Принят</span>
+                                                {% elif a.status == 'declined' %}
+                                                    <span class="badge bg-danger">Отклонён</span>
+                                                {% elif a.status == 'cancelled' %}
+                                                    <span class="badge bg-secondary">Заказ отменён</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning text-dark">На рассмотрении</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        {% if a.message %}
+                                            <div class="text-muted small mt-2">Сообщение</div>
+                                            <div>{{ a.message }}</div>
+                                        {% else %}
+                                            <div class="text-muted mt-2">Сообщение не добавлено.</div>
+                                        {% endif %}
+
+                                        {% if order.payment_status != 'funded' and order.status in ['open', 'has_responses'] %}
+                                            <div class="alert alert-warning mt-3 mb-0 py-2 small">
+                                                Чтобы принять исполнителя, сначала пополните бюджет объявления.
+                                            </div>
+                                        {% endif %}
+                                        {% if order.payment_status == 'funded' and order.status in ['open', 'has_responses'] and not a.customer_opened_chat %}
+                                            <div class="alert alert-info mt-3 mb-0 py-2 small">
+                                                Перед подтверждением исполнителя откройте чат и обсудите детали заказа.
+                                            </div>
+                                        {% endif %}
+
+                                        <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
+                                            <form method="POST" action="{{ url_for('application_status', app_id=a.id) }}" class="d-flex gap-2">
+                                                <input type="hidden" name="status" value="accepted">
+                                                <button type="submit" class="btn btn-sm btn-success rounded-3" {% if a.status == 'accepted' or order.payment_status != 'funded' or order.status not in ['open', 'has_responses'] or not a.customer_opened_chat %}disabled{% endif %}>Принять</button>
+                                            </form>
+                                            <form method="POST" action="{{ url_for('application_status', app_id=a.id) }}" class="d-flex gap-2">
+                                                <input type="hidden" name="status" value="declined">
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary rounded-3" {% if a.status == 'declined' or order.status not in ['open', 'has_responses'] %}disabled{% endif %}>Отклонить</button>
+                                            </form>
+                                            {% if a.conversation_id %}
+                                                <a href="{{ url_for('conversation', conv_id=a.conversation_id) }}" class="btn btn-sm btn-outline-primary rounded-3 ms-auto">
+                                                    {% if a.customer_opened_chat %}Открыть чат{% else %}Обсудить в чате{% endif %}
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

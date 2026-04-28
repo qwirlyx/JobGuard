@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ order.title }} — JobGuard{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4 p-lg-5">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                    <div>
+                        <div class="text-muted small mb-1">Заказ #{{ order.id }}</div>
+                        <h1 class="h3 fw-bold mb-2">{{ order.title }}</h1>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for t in order.tags %}
+                                <a class="badge bg-dark-900 border border-primary/30 text-decoration-none" href="{{ url_for('orders_list', tag=t) }}">{{ t }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="badge bg-primary-subtle text-primary fs-6 mb-1">{{ money(order.price) }} ₽</div>
+                        <div class="text-muted">Срок: {{ order.deadline_days }} дней</div>
+                        <div class="text-muted small mt-1">Резерв 50%: {{ money(order.reserve_amount) }} ₽</div>
+                        <div class="mt-1">
+                            <span class="badge {{ payment_status_class(order.payment_status) }}">
+                                {{ payment_status_text(order.payment_status) }}
+                            </span>
+                        </div>
+                        <div class="mt-1">
+                            {% if order.status == 'in_progress' %}
+                                <span class="badge bg-info text-dark">В работе</span>
+                            {% elif order.status == 'review' %}
+                                <span class="badge bg-primary">На проверке</span>
+                            {% elif order.status == 'done' %}
+                                <span class="badge bg-secondary">Завершён</span>
+                            {% elif order.status in ['cancelled', 'cancelled_by_customer', 'cancelled_by_student', 'cancel_requested', 'dispute'] %}
+                                <span class="badge bg-danger">{{ status_label(order.status) }}</span>
+                            {% elif order.status == 'has_responses' %}
+                                <span class="badge bg-warning text-dark">Есть отклики</span>
+                            {% else %}
+                                <span class="badge bg-success">Открыт</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-muted mb-2">Описание</div>
+                <div class="fs-6">{{ order.description }}</div>
+
+                {% if order.status == 'dispute' %}
+                    <div class="alert alert-danger mt-4 mb-0">
+                        <div class="fw-semibold mb-1"><i class="bi bi-shield-exclamation me-1"></i>По заказу открыт спор</div>
+                        <div class="small">
+                            Средства по заказу заморожены до решения администратора.
+                            {% if order.dispute_reason %}
+                                <br>Причина: {{ order.dispute_reason }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="fw-semibold mb-2">Действия</div>
+
+                {% if not current_user.is_authenticated %}
+                    <div class="text-muted mb-3">Чтобы откликнуться — войди или зарегистрируйся.</div>
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary rounded-3" href="{{ url_for('login') }}">Войти</a>
+                        <a class="btn btn-outline-primary rounded-3" href="{{ url_for('register') }}">Создать аккаунт</a>
+                    </div>
+                {% else %}
+                    {% if current_role == 'student' %}
+                        {% if order.executor == current_user.id and order.status == 'in_progress' %}
+                            {% if order.payment_status == 'reserved' %}
+                                <div class="alert alert-success mb-3">
+                                    На вашем балансе зарезервировано 50% суммы: {{ money(order.reserve_amount) }} ₽. После принятия работы заказчиком будет начислена полная сумма заказа.
+                                </div>
+
+                                <form method="POST" action="{{ url_for('order_submit_review', order_id=order.id) }}">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Ссылка на работу</label>
+                                        <input type="url" name="result_url" class="form-control bg-dark-900 border-primary/30 text-light" placeholder="https://github.com/user/project" required>
+                                        <div class="text-muted small mt-1">Можно указать GitHub, GitLab, Google Drive, демо-сайт или ссылку на архив.</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Комментарий</label>
+                                        <textarea name="result_comment" class="form-control bg-dark-900 border-primary/30 text-light" rows="3" placeholder="Что сделано, как запустить, что проверить..."></textarea>
+                                    </div>
+
+                                    <button class="btn btn-primary rounded-3 w-100" type="submit" onclick="return confirm('Отправить работу заказчику на проверку?');">
+                                        <i class="bi bi-check2-circle me-1"></i>Отправить на проверку
+                                    </button>
+                                </form>
+                            {% else %}
+                                <div class="alert alert-warning mb-0">
+                                    Ожидайте, пока заказчик пополнит бюджет объявления и подтвердит вас исполнителем. После этого на вашем балансе будет зарезервировано 50%:
+                                    <strong>{{ money(order.reserve_amount) }} ₽</strong>.
+                                </div>
+                            {% endif %}
+
+                            <form method="POST" action="{{ url_for('order_cancel_active', order_id=order.id) }}" class="mt-3">
+                                <label class="form-label text-muted">Причина отказа от выполнения</label>
+                                <textarea name="reason" rows="2" class="form-control bg-dark-900 border-primary/30 text-light mb-2" placeholder="Например: не успеваю выполнить задачу в срок..."></textarea>
+                                <button class="btn btn-outline-danger rounded-3 w-100" type="submit" onclick="return confirm('Отказаться от выполнения заказа? Резерв будет снят, заказчику вернутся средства.');">
+                                    <i class="bi bi-x-circle me-1"></i>Отказаться от выполнения
+                                </button>
+                            </form>
+
+                            <form method="POST" action="{{ url_for('order_open_dispute', order_id=order.id) }}" class="mt-3">
+                                <label class="form-label text-muted">Открыть спор</label>
+                                <textarea name="reason" rows="2" class="form-control bg-dark-900 border-danger/30 text-light mb-2" placeholder="Опишите проблему: заказчик не принимает работу, изменил условия, не выходит на связь..."></textarea>
+                                <button class="btn btn-outline-warning rounded-3 w-100" type="submit" onclick="return confirm('Открыть спор по этому заказу? Средства будут заморожены до решения администратора.');">
+                                    <i class="bi bi-shield-exclamation me-1"></i>Открыть спор
+                                </button>
+                            </form>
+
+                        {% elif order.executor == current_user.id and order.status == 'review' %}
+                            <div class="alert alert-primary mb-3">Работа отправлена на проверку. Ожидайте подтверждения заказчика.</div>
+                            {% if order.submitted_url %}
+                                <div class="p-3 rounded-4 border border-primary/30 bg-dark-900">
+                                    <div class="text-muted small mb-1">Отправленная ссылка</div>
+                                    <a href="{{ order.submitted_url }}" target="_blank" rel="noopener" class="link-primary">{{ order.submitted_url }}</a>
+                                    {% if order.submitted_comment %}
+                                        <div class="text-muted small mt-3 mb-1">Комментарий</div>
+                                        <div>{{ order.submitted_comment }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <form method="POST" action="{{ url_for('order_open_dispute', order_id=order.id) }}" class="mt-3">
+                                <label class="form-label text-muted">Открыть спор</label>
+                                <textarea name="reason" rows="2" class="form-control bg-dark-900 border-danger/30 text-light mb-2" placeholder="Например: работа отправлена, но заказчик не отвечает или требует новое ТЗ..."></textarea>
+                                <button class="btn btn-outline-warning rounded-3 w-100" type="submit" onclick="return confirm('Открыть спор по этому заказу?');">
+                                    <i class="bi bi-shield-exclamation me-1"></i>Открыть спор
+                                </button>
+                            </form>
+                        {% elif order.executor == current_user.id and order.status == 'done' %}
+                            <div class="alert alert-success mb-0">Заказ завершён. Полная сумма начислена на баланс.</div>
+                        {% elif order.executor == current_user.id and order.status == 'dispute' %}
+                            <div class="alert alert-danger mb-0">
+                                По заказу открыт спор. Средства заморожены до решения администратора.
+                                {% if order.dispute_reason %}<br>Причина: {{ order.dispute_reason }}{% endif %}
+                            </div>
+                        {% elif user_applied %}
+                            <div class="alert alert-info mb-3">Ты уже отправил отклик на этот заказ.</div>
+                            <a class="btn btn-outline-primary rounded-3 w-100" href="{{ url_for('responses') }}">Открыть мои отклики</a>
+                        {% else %}
+                            {% if order.status in ['open', 'has_responses'] %}
+                                <form method="POST" action="{{ url_for('order_apply', order_id=order.id) }}">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Сообщение заказчику (необязательно)</label>
+                                        <textarea class="form-control bg-dark-900 border-primary/30 text-light" name="message" rows="4" placeholder="Коротко: опыт, сроки, что готов сделать..."></textarea>
+                                    </div>
+                                    <button class="btn btn-primary rounded-3 w-100" type="submit">
+                                        <i class="bi bi-send me-1"></i> Откликнуться
+                                    </button>
+                                </form>
+                            {% else %}
+                                <div class="alert alert-secondary mb-0">Заказ больше не принимает отклики.</div>
+                            {% endif %}
+                        {% endif %}
+                    {% elif current_role == 'customer' %}
+                        {% if order.owner == current_user.id %}
+                            <div class="text-muted mb-3">Это ваш заказ. Вы можете управлять им.</div>
+                            <div class="d-grid gap-2">
+                                {% if order.status in ['open', 'has_responses'] %}
+                                    {% if order.payment_status == 'not_funded' %}
+                                        <a class="btn btn-primary rounded-3" href="{{ url_for('order_fund', order_id=order.id) }}">
+                                            <i class="bi bi-credit-card me-1"></i>Пополнить бюджет объявления
+                                        </a>
+                                        <a class="btn btn-outline-primary rounded-3" href="{{ url_for('order_edit', order_id=order.id) }}">
+                                            <i class="bi bi-pencil-square me-1"></i>Редактировать
+                                        </a>
+                                    {% elif order.payment_status == 'funded' %}
+                                        <div class="alert alert-success mb-0">
+                                            Бюджет объявления пополнен: {{ money(order.funded_amount) }} ₽. Теперь можно выбрать исполнителя.
+                                        </div>
+                                    {% endif %}
+                                    <form method="POST" action="{{ url_for('order_cancel', order_id=order.id) }}">
+                                        <button class="btn btn-outline-danger rounded-3 w-100" type="submit" onclick="return confirm('Отменить этот заказ? Отклики по нему будут закрыты.');">
+                                            <i class="bi bi-x-circle me-1"></i>Отменить заказ
+                                        </button>
+                                    </form>
+                                {% elif order.status == 'in_progress' %}
+                                    <div class="p-3 rounded-4 border border-primary/30 bg-dark-900">
+                                        <div class="fw-semibold mb-1">Защита сделки</div>
+                                        <div class="text-muted small mb-2">
+                                            Исполнитель выбран. На его балансе зарезервировано 50%:
+                                            <strong class="text-light">{{ money(order.reserve_amount) }} ₽</strong>.
+                                            Остальная сумма будет начислена после принятия работы.
+                                        </div>
+                                        <span class="badge bg-info text-dark">Средства в резерве</span>
+                                    </div>
+                                    <form method="POST" action="{{ url_for('order_cancel_active', order_id=order.id) }}" class="mt-2">
+                                        <label class="form-label text-muted small">Причина отмены</label>
+                                        <textarea name="reason" rows="2" class="form-control bg-dark-900 border-primary/30 text-light mb-2" placeholder="Исполнитель не выходит на связь или нарушил срок..."></textarea>
+                                        <button class="btn btn-outline-danger rounded-3 w-100" type="submit" {% if not order_deadline_passed(order) %}disabled{% endif %} onclick="return confirm('Отменить активный заказ и вернуть бюджет?');">
+                                            <i class="bi bi-x-circle me-1"></i>Отменить активный заказ
+                                        </button>
+                                        {% if not order_deadline_passed(order) %}
+                                            <div class="text-muted small mt-1">Отмена с возвратом доступна после срока: {{ order_deadline_text(order) }}.</div>
+                                        {% endif %}
+                                    </form>
+
+                                    <form method="POST" action="{{ url_for('order_open_dispute', order_id=order.id) }}" class="mt-2">
+                                        <label class="form-label text-muted small">Открыть спор</label>
+                                        <textarea name="reason" rows="2" class="form-control bg-dark-900 border-danger/30 text-light mb-2" placeholder="Исполнитель не выходит на связь, нарушает условия или есть конфликт..."></textarea>
+                                        <button class="btn btn-outline-warning rounded-3 w-100" type="submit" onclick="return confirm('Открыть спор по этому заказу? Средства будут заморожены до решения администратора.');">
+                                            <i class="bi bi-shield-exclamation me-1"></i>Открыть спор
+                                        </button>
+                                    </form>
+                                {% elif order.status == 'review' %}
+                                    {% if order.submitted_url %}
+                                        <div class="p-3 rounded-4 border border-primary/30 bg-dark-900 mb-2">
+                                            <div class="text-muted small mb-1">Работа отправлена на проверку</div>
+                                            <a href="{{ order.submitted_url }}" target="_blank" rel="noopener" class="link-primary">{{ order.submitted_url }}</a>
+                                            {% if order.submitted_comment %}
+                                                <div class="text-muted small mt-3 mb-1">Комментарий исполнителя</div>
+                                                <div>{{ order.submitted_comment }}</div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    <form method="POST" action="{{ url_for('order_close', order_id=order.id) }}">
+                                        <button class="btn btn-success rounded-3 w-100" type="submit" onclick="return confirm('Принять работу и завершить заказ?');">
+                                            <i class="bi bi-check2-circle me-1"></i>Принять работу
+                                        </button>
+                                    </form>
+
+                                    <form method="POST" action="{{ url_for('order_open_dispute', order_id=order.id) }}" class="mt-2">
+                                        <label class="form-label text-muted small">Открыть спор</label>
+                                        <textarea name="reason" rows="2" class="form-control bg-dark-900 border-danger/30 text-light mb-2" placeholder="Опишите, почему работа не принимается..."></textarea>
+                                        <button class="btn btn-outline-warning rounded-3 w-100" type="submit" onclick="return confirm('Открыть спор по этому заказу?');">
+                                            <i class="bi bi-shield-exclamation me-1"></i>Открыть спор
+                                        </button>
+                                    </form>
+                                {% elif order.status == 'dispute' %}
+                                    <div class="alert alert-danger mb-0">
+                                        По заказу открыт спор. Средства заморожены до решения администратора.
+                                        {% if order.dispute_reason %}<br>Причина: {{ order.dispute_reason }}{% endif %}
+                                    </div>
+                                {% else %}
+                                    <button class="btn btn-outline-secondary rounded-3" type="button" disabled>Редактирование недоступно</button>
+                                {% endif %}
+                                <a class="btn btn-outline-primary rounded-3" href="{{ url_for('my_orders') }}">
+                                    <i class="bi bi-list-check me-1"></i>Мои заказы
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="text-muted mb-3">Вы авторизованы как заказчик. Откликаться на заказы нельзя.</div>
+                            <a class="btn btn-primary rounded-3 w-100" href="{{ url_for('order_new') }}">
+                                <i class="bi bi-plus-lg me-1"></i>Создать заказ
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-muted">Не удалось определить роль аккаунта.</div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a class="btn btn-outline-primary rounded-3 w-100" href="{{ url_for('orders_list') }}">
+                <i class="bi bi-arrow-left me-1"></i> Назад к списку
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

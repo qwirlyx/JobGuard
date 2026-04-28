@@ -1,0 +1,1057 @@
+{
+  "users": {
+    "admin": {
+      "email": "admin@jobguard.local",
+      "password": "scrypt:32768:8:1$7Y5XdLlPuKweMLdB$6fe5dc86d16375cc59aeef4227c7615284896a1e238202afb71810acf4b275c6b44b0ff58d71c487537f668ceecbb45c5b917e6749a9ebaa877b40d79435f1c2",
+      "role": "admin",
+      "student_info": {},
+      "notifications": [
+        {
+          "id": 2,
+          "title": "Новое обращение в поддержку",
+          "text": "Дмитрий Соколов написал в поддержку: Не приходит уведомление",
+          "url": "/admin/support",
+          "kind": "info",
+          "is_read": false,
+          "created_at": "2026-04-28 06:12"
+        },
+        {
+          "id": 1,
+          "title": "Новый спор",
+          "text": "По заказу #6 открыт спор. Требуется решение администратора.",
+          "url": "/admin/disputes",
+          "kind": "danger",
+          "is_read": false,
+          "created_at": "2026-04-28 06:17"
+        }
+      ],
+      "profile": {
+        "display_name": "Администратор JobGuard",
+        "city": "Москва",
+        "skills": "",
+        "about": "Служебный аккаунт администратора платформы.",
+        "github": "",
+        "telegram": "",
+        "portfolio": "",
+        "resume_filename": "",
+        "avatar_filename": "",
+        "updated_at": "2026-04-28 06:22",
+        "projects": []
+      },
+      "wallet": {
+        "available": 0,
+        "reserved": 0,
+        "withdrawn": 0,
+        "commission_paid": 0,
+        "operations": [],
+        "customer_spent": 0,
+        "customer_frozen": 0,
+        "customer_returned": 0
+      },
+      "is_blocked": false,
+      "created_at": "2026-04-14 06:22"
+    },
+    "customer_anna": {
+      "email": "anna.customer@example.com",
+      "password": "scrypt:32768:8:1$xPBwch5XesDszpFd$195c9b69ab963ff30b5f11895202c52bd22df90ede26d99e12f794e8cb6fd3a00829b8d270a1be6bd238a4b26fe4eaebcee443570e0b5532f3ac401d5b299aff",
+      "role": "customer",
+      "student_info": {},
+      "notifications": [
+        {
+          "id": 2,
+          "title": "Исполнитель отказался",
+          "text": "Исполнитель отказался от заказа #7. Бюджет возвращён на баланс.",
+          "url": "/my-orders",
+          "kind": "warning",
+          "is_read": true,
+          "created_at": "2026-04-28 06:12"
+        },
+        {
+          "id": 1,
+          "title": "Работа завершена",
+          "text": "Заказ #5 успешно завершён. Можно оставить отзыв исполнителю.",
+          "url": "/my-orders",
+          "kind": "success",
+          "is_read": true,
+          "created_at": "2026-04-28 06:17"
+        }
+      ],
+      "profile": {
+        "display_name": "Анна Морозова",
+        "city": "Москва",
+        "skills": "",
+        "about": "Руководитель небольшого агентства. Размещаю учебные IT-задачи и даю подробную обратную связь.",
+        "github": "",
+        "telegram": "@anna_jobguard",
+        "portfolio": "",
+        "resume_filename": "",
+        "avatar_filename": "avatar-customer_anna-1ae171bbab8f4ea0ade4c35088c4fa46.png",
+        "updated_at": "2026-04-28 09:29",
+        "projects": []
+      },
+      "wallet": {
+        "available": 12000,
+        "reserved": 0,
+        "withdrawn": 0,
+        "commission_paid": 0,
+        "operations": [
+          {
+            "id": 4,
+            "kind": "refund",
+            "amount": 12000,
+            "description": "Возврат бюджета по заказу #7: исполнитель отказался",
+            "order_id": 7,
+            "created_at": "2026-04-28 05:54"
+          },
+          {
+            "id": 3,
+            "kind": "order_fund",
+            "amount": 12660,
+            "description": "Пополнение объявления #7: бюджет 12 000 ₽ + комиссия 660 ₽",
+            "order_id": 7,
+            "created_at": "2026-04-28 06:01",
+            "budget_amount": 12000,
+            "fee_amount": 660
+          },
+          {
+            "id": 2,
+            "kind": "order_fund",
+            "amount": 56950,
+            "description": "Пополнение объявления #5: бюджет 55 000 ₽ + комиссия 1 950 ₽",
+            "order_id": 5,
+            "created_at": "2026-04-28 06:08",
+            "budget_amount": 55000,
+            "fee_amount": 1950
+          },
+          {
+            "id": 1,
+            "kind": "order_fund",
+            "amount": 46650,
+            "description": "Пополнение объявления #3: бюджет 45 000 ₽ + комиссия 1 650 ₽",
+            "order_id": 3,
+            "created_at": "2026-04-28 06:15",
+            "budget_amount": 45000,
+            "fee_amount": 1650
+          }
+        ],
+        "customer_spent": 116260,
+        "customer_frozen": 45000,
+        "customer_returned": 12000
+      },
+      "is_blocked": false,
+      "created_at": "2026-04-14 06:22"
+    },
+    "customer_ivan": {
+      "email": "ivan.customer@example.com",
+      "password": "scrypt:32768:8:1$JgJopDPjUdU5rapm$85d3a1f1ded3d26e3c4f44c4ef4d85bf382a60de8a0fbfa4bb6caa17ef200f6df5a68455d1e090f2ed78e6865ce32af84f3faae215591956fb30243575f0cac8",
+      "role": "customer",
+      "student_info": {},
+      "notifications": [
+        {
+          "id": 3,
+          "title": "Новый отклик",
+          "text": "Мария Кузнецова откликнулась на заказ #2",
+          "url": "/my-orders",
+          "kind": "info",
+          "is_read": false,
+          "created_at": "2026-04-28 06:07"
+        },
+        {
+          "id": 2,
+          "title": "Новый отклик",
+          "text": "Олег Васильев откликнулся на заказ #2",
+          "url": "/my-orders",
+          "kind": "info",
+          "is_read": false,
+          "created_at": "2026-04-28 06:12"
+        },
+        {
+          "id": 1,
+          "title": "Работа отправлена на проверку",
+          "text": "Мария Кузнецова отправила работу по заказу #4.",
+          "url": "/orders/4",
+          "kind": "primary",
+          "is_read": false,
+          "created_at": "2026-04-28 06:17"
+        }
+      ],
+      "profile": {
+        "display_name": "Иван Петров",
+        "city": "Санкт-Петербург",
+        "skills": "",
+        "about": "Предприниматель. Ищу студентов для прототипов, ботов и небольших веб-сервисов.",
+        "github": "",
+        "telegram": "@ivan_projects",
+        "portfolio": "",
+        "resume_filename": "",
+        "avatar_filename": "",
+        "updated_at": "2026-04-28 06:22",
+        "projects": []
+      },
+      "wallet": {
+        "available": 0,
+        "reserved": 0,
+        "withdrawn": 0,
+        "commission_paid": 0,
+        "operations": [
+          {
+            "id": 3,
+            "kind": "order_fund",
+            "amount": 82700,
+            "description": "Пополнение объявления #6: бюджет 80 000 ₽ + комиссия 2 700 ₽",
+            "order_id": 6,
+            "created_at": "2026-04-28 06:01",
+            "budget_amount": 80000,
+            "fee_amount": 2700
+          },
+          {
+            "id": 2,
+            "kind": "order_fund",
+            "amount": 72400,
+            "description": "Пополнение объявления #4: бюджет 70 000 ₽ + комиссия 2 400 ₽",
+            "order_id": 4,
+            "created_at": "2026-04-28 06:08",
+            "budget_amount": 70000,
+            "fee_amount": 2400
+          },
+          {
+            "id": 1,
+            "kind": "order_fund",
+            "amount": 31200,
+            "description": "Пополнение объявления #2: бюджет 30 000 ₽ + комиссия 1 200 ₽",
+            "order_id": 2,
+            "created_at": "2026-04-28 06:15",
+            "budget_amount": 30000,
+            "fee_amount": 1200
+          }
+        ],
+        "customer_spent": 186300,
+        "customer_frozen": 180000,
+        "customer_returned": 0
+      },
+      "is_blocked": false,
+      "created_at": "2026-04-14 06:22"
+    },
+    "student_dmitry": {
+      "email": "dmitry.student@example.com",
+      "password": "scrypt:32768:8:1$oUcGTy0WBRrFfHCb$25e955f4c7d32a1ef85c17a182ab42aa6470647d8951febc8c0ce733d367fbcae720c0f9811559715fbe24fb7d4ba1a097deb81ac7fcba47b2d9ef97fd76127a",
+      "role": "student",
+      "student_info": {
+        "student_status": "studying",
+        "age": 21,
+        "institution": "Университет ИТМО",
+        "faculty": "Информационные системы и технологии",
+        "education_level": "bachelor",
+        "course": 3
+      },
+      "notifications": [
+        {
+          "id": 2,
+          "title": "Открыт спор",
+          "text": "Иван Петров открыл спор по заказу #6. Деньги заморожены до решения.",
+          "url": "/orders/6",
+          "kind": "danger",
+          "is_read": false,
+          "created_at": "2026-04-28 06:12"
+        },
+        {
+          "id": 1,
+          "title": "Отклик принят",
+          "text": "Вы выбраны исполнителем заказа #3. 50% бюджета зарезервировано на балансе.",
+          "url": "/responses",
+          "kind": "success",
+          "is_read": true,
+          "created_at": "2026-04-28 06:17"
+        }
+      ],
+      "profile": {
+        "display_name": "Дмитрий Соколов",
+        "city": "Москва",
+        "skills": "Python, Flask, PostgreSQL, Telegram Bot, REST API",
+        "about": "Студент 3 курса. Делаю backend, Flask-приложения и Telegram-ботов.",
+        "github": "https://github.com/demo-dmitry",
+        "telegram": "@dmitry_dev",
+        "portfolio": "https://portfolio.example.com/dmitry",
+        "resume_filename": "",
+        "avatar_filename": "",
+        "updated_at": "2026-04-28 06:22",
+        "projects": []
+      },
+      "wallet": {
+        "available": 0,
+        "reserved": 62500,
+        "withdrawn": 0,
+        "commission_paid": 0,
+        "operations": [
+          {
+            "id": 2,
+            "kind": "reserve",
+            "amount": 40000,
+            "description": "Зарезервировано 50% по заказу #6",
+            "order_id": 6,
+            "created_at": "2026-04-28 06:08"
+          },
+          {
+            "id": 1,
+            "kind": "reserve",
+            "amount": 22500,
+            "description": "Зарезервировано 50% по заказу #3",
+            "order_id": 3,
+            "created_at": "2026-04-28 06:15"
+          }
+        ],
+        "customer_spent": 0,
+        "customer_frozen": 0,
+        "customer_returned": 0
+      },
+      "is_blocked": false,
+      "created_at": "2026-04-14 06:22"
+    },
+    "student_maria": {
+      "email": "maria.student@example.com",
+      "password": "scrypt:32768:8:1$FdJdjrLwwqxzM3v6$6a010b62c2715e5d97efa3ae61a221755136744d2a1ea3110f466dc16436cd4795a231eebbb6764cfddaf0632f3d6fca308995219d639a941f460752d91253ec",
+      "role": "student",
+      "student_info": {
+        "student_status": "studying",
+        "age": 20,
+        "institution": "МГТУ им. Н. Э. Баумана",
+        "faculty": "Информатика и системы управления",
+        "education_level": "bachelor",
+        "course": 2
+      },
+      "notifications": [
+        {
+          "id": 1,
+          "title": "Работа на проверке",
+          "text": "Работа по заказу #4 отправлена заказчику.",
+          "url": "/responses",
+          "kind": "primary",
+          "is_read": false,
+          "created_at": "2026-04-28 06:17"
+        }
+      ],
+      "profile": {
+        "display_name": "Мария Кузнецова",
+        "city": "Москва",
+        "skills": "Django, HTML, CSS, JavaScript, Figma",
+        "about": "Студентка 2 курса. Интересуюсь web-разработкой и интерфейсами.",
+        "github": "https://github.com/demo-maria",
+        "telegram": "@maria_frontend",
+        "portfolio": "",
+        "resume_filename": "",
+        "avatar_filename": "",
+        "updated_at": "2026-04-28 06:22",
+        "projects": []
+      },
+      "wallet": {
+        "available": 0,
+        "reserved": 35000,
+        "withdrawn": 0,
+        "commission_paid": 0,
+        "operations": [
+          {
+            "id": 1,
+            "kind": "reserve",
+            "amount": 35000,
+            "description": "Зарезервировано 50% по заказу #4",
+            "order_id": 4,
+            "created_at": "2026-04-28 06:15"
+          }
+        ],
+        "customer_spent": 0,
+        "customer_frozen": 0,
+        "customer_returned": 0
+      },
+      "is_blocked": false,
+      "created_at": "2026-04-14 06:22"
+    },
+    "student_oleg": {
+      "email": "oleg.student@example.com",
+      "password": "scrypt:32768:8:1$RSBuwGlDLHE3zkHG$3e9954196f001e30f6fb5850fbc1c68d564eeaa98da38dddd5c3f52774ac8641255fd1addb7c838606c44512752e1038bcf45678131e42324ee0d1a4f021d4f8",
+      "role": "student",
+      "student_info": {
+        "student_status": "graduate",
+        "age": 23,
+        "institution": "НИУ ВШЭ",
+        "faculty": "Программная инженерия",
+        "education_level": "master",
+        "course": ""
+      },
+      "notifications": [
+        {
+          "id": 2,
+          "title": "Новое сообщение",
+          "text": "Анна Морозова: Привет привет",
+          "url": "/messages/5",
+          "kind": "info",
+          "is_read": false,
+          "created_at": "2026-04-28 07:07"
+        },
+        {
+          "id": 1,
+          "title": "Работа принята",
+          "text": "Заказ #5 завершён. На баланс начислено 55 000 ₽.",
+          "url": "/balance",
+          "kind": "success",
+          "is_read": true,
+          "created_at": "2026-04-28 06:17"
+        }
+      ],
+      "profile": {
+        "display_name": "Олег Васильев",
+        "city": "Казань",
+        "skills": "Flutter, Dart, Firebase, UI",
+        "about": "Выпускник. Делаю мобильные прототипы и простые приложения.",
+        "github": "https://github.com/demo-oleg",
+        "telegram": "@oleg_mobile",
+        "portfolio": "",
+        "resume_filename": "",
+        "avatar_filename": "",
+        "updated_at": "2026-04-28 06:22",
+        "projects": []
+      },
+      "wallet": {
+        "available": 55000,
+        "reserved": 0,
+        "withdrawn": 0,
+        "commission_paid": 0,
+        "operations": [
+          {
+            "id": 1,
+            "kind": "income",
+            "amount": 55000,
+            "description": "Начислена полная оплата по заказу #5",
+            "order_id": 5,
+            "created_at": "2026-04-28 06:15"
+          }
+        ],
+        "customer_spent": 0,
+        "customer_frozen": 0,
+        "customer_returned": 0
+      },
+      "is_blocked": false,
+      "created_at": "2026-04-14 06:22"
+    }
+  },
+  "orders": [
+    {
+      "id": 1,
+      "title": "Лендинг для кофейни на Flask",
+      "price": 18000,
+      "deadline_days": 7,
+      "description": "Нужно сделать простой лендинг с формой заявки, адаптивной вёрсткой и сохранением заявок в JSON. Подойдёт для начинающего backend-разработчика.",
+      "tags": [
+        "Flask",
+        "HTML",
+        "CSS"
+      ],
+      "created_at": "2026-04-27 06:22",
+      "updated_at": "2026-04-28 05:52",
+      "owner": "customer_anna",
+      "status": "open",
+      "executor": null,
+      "reserve_amount": 9000,
+      "reserved_amount": 0,
+      "funded_amount": 0,
+      "payment_status": "not_funded",
+      "payment_history": [],
+      "platform_fee_fixed": 300,
+      "platform_fee_percent": 3,
+      "platform_fee_amount": 840,
+      "fund_total_amount": 18840
+    },
+    {
+      "id": 2,
+      "title": "Парсер цен конкурентов",
+      "price": 30000,
+      "deadline_days": 10,
+      "description": "Нужно собрать парсер цен с нескольких сайтов, сохранить результат в CSV и сделать короткую инструкцию запуска.",
+      "tags": [
+        "Python",
+        "Парсинг",
+        "CSV"
+      ],
+      "created_at": "2026-04-25 06:22",
+      "updated_at": "2026-04-28 05:52",
+      "owner": "customer_ivan",
+      "status": "has_responses",
+      "executor": null,
+      "reserve_amount": 15000,
+      "reserved_amount": 0,
+      "funded_amount": 30000,
+      "payment_status": "funded",
+      "payment_history": [
+        {
+          "kind": "fund",
+          "amount": 30000,
+          "fee_amount": 1200,
+          "total_amount": 31200,
+          "description": "Демонстрационное пополнение бюджета объявления с комиссией площадки",
+          "created_at": "2026-04-26 06:22"
+        }
+      ],
+      "platform_fee_fixed": 300,
+      "platform_fee_percent": 3,
+      "platform_fee_amount": 1200,
+      "fund_total_amount": 31200,
+      "funded_at": "2026-04-26 06:22"
+    },
+    {
+      "id": 3,
+      "title": "Telegram-бот для записи на консультации",
+      "price": 45000,
+      "deadline_days": 14,
+      "description": "Бот должен показывать услуги, свободные слоты, принимать заявку и отправлять уведомление заказчику.",
+      "tags": [
+        "Telegram Bot",
+        "Python",
+        "Flask"
+      ],
+      "created_at": "2026-04-22 06:22",
+      "updated_at": "2026-04-28 05:52",
+      "owner": "customer_anna",
+      "status": "in_progress",
+      "executor": "student_dmitry",
+      "reserve_amount": 22500,
+      "reserved_amount": 22500,
+      "funded_amount": 45000,
+      "payment_status": "reserved",
+      "payment_history": [
+        {
+          "kind": "reserve",
+          "amount": 22500,
+          "description": "50% бюджета зарезервировано исполнителю",
+          "created_at": "2026-04-24 06:22"
+        },
+        {
+          "kind": "fund",
+          "amount": 45000,
+          "fee_amount": 1650,
+          "total_amount": 46650,
+          "description": "Демонстрационное пополнение бюджета объявления с комиссией площадки",
+          "created_at": "2026-04-23 06:22"
+        }
+      ],
+      "platform_fee_fixed": 300,
+      "platform_fee_percent": 3,
+      "platform_fee_amount": 1650,
+      "fund_total_amount": 46650,
+      "funded_at": "2026-04-23 06:22",
+      "reserved_for": "student_dmitry",
+      "reserved_at": "2026-04-24 06:22",
+      "accepted_at": "2026-04-24 06:22"
+    },
+    {
+      "id": 4,
+      "title": "Интернет-магазин на Django",
+      "price": 70000,
+      "deadline_days": 21,
+      "description": "Нужен учебный прототип магазина: каталог, карточка товара, корзина, оформление заявки и админская часть.",
+      "tags": [
+        "Django",
+        "JavaScript",
+        "Bootstrap"
+      ],
+      "created_at": "2026-04-16 06:22",
+      "updated_at": "2026-04-28 05:52",
+      "owner": "customer_ivan",
+      "status": "review",
+      "executor": "student_maria",
+      "reserve_amount": 35000,
+      "reserved_amount": 35000,
+      "funded_amount": 70000,
+      "payment_status": "reserved",
+      "payment_history": [
+        {
+          "kind": "reserve",
+          "amount": 35000,
+          "description": "50% бюджета зарезервировано исполнителю",
+          "created_at": "2026-04-18 06:22"
+        },
+        {
+          "kind": "fund",
+          "amount": 70000,
+          "fee_amount": 2400,
+          "total_amount": 72400,
+          "description": "Демонстрационное пополнение бюджета объявления с комиссией площадки",
+          "created_at": "2026-04-17 06:22"
+        }
+      ],
+      "platform_fee_fixed": 300,
+      "platform_fee_percent": 3,
+      "platform_fee_amount": 2400,
+      "fund_total_amount": 72400,
+      "funded_at": "2026-04-17 06:22",
+      "reserved_for": "student_maria",
+      "reserved_at": "2026-04-18 06:22",
+      "accepted_at": "2026-04-18 06:22",
+      "submitted_at": "2026-04-28 04:52",
+      "submitted_by": "student_maria",
+      "submitted_url": "https://github.com/demo-maria/django-shop-demo",
+      "submitted_comment": "Реализован каталог, корзина и оформление заявки. Инструкция запуска в README."
+    },
+    {
+      "id": 5,
+      "title": "Дашборд аналитики заказов",
+      "price": 55000,
+      "deadline_days": 12,
+      "description": "Сделать dashboard с графиками по заказам, выручке и активности пользователей.",
+      "tags": [
+        "Dashboard",
+        "Python",
+        "Charts"
+      ],
+      "created_at": "2026-04-08 06:22",
+      "updated_at": "2026-04-28 05:52",
+      "owner": "customer_anna",
+      "status": "done",
+      "executor": "student_oleg",
+      "reserve_amount": 27500,
+      "reserved_amount": 0,
+      "funded_amount": 55000,
+      "payment_status": "paid",
+      "payment_history": [
+        {
+          "kind": "paid",
+          "amount": 55000,
+          "description": "Полная сумма начислена исполнителю Олег Васильев",
+          "created_at": "2026-04-26 06:22"
+        },
+        {
+          "kind": "fund",
+          "amount": 55000,
+          "fee_amount": 1950,
+          "total_amount": 56950,
+          "description": "Демонстрационное пополнение бюджета объявления с комиссией площадки",
+          "created_at": "2026-04-09 06:22"
+        }
+      ],
+      "platform_fee_fixed": 300,
+      "platform_fee_percent": 3,
+      "platform_fee_amount": 1950,
+      "fund_total_amount": 56950,
+      "funded_at": "2026-04-09 06:22",
+      "paid_amount": 55000,
+      "paid_at": "2026-04-26 06:22",
+      "completed_at": "2026-04-26 06:22"
+    },
+    {
+      "id": 6,
+      "title": "Мобильный прототип на Flutter",
+      "price": 80000,
+      "deadline_days": 18,
+      "description": "Нужен кликабельный прототип мобильного приложения с авторизацией, каталогом и личным кабинетом.",
+      "tags": [
+        "Flutter",
+        "Dart",
+        "Prototype"
+      ],
+      "created_at": "2026-04-19 06:22",
+      "updated_at": "2026-04-28 05:52",
+      "owner": "customer_ivan",
+      "status": "dispute",
+      "executor": "student_dmitry",
+      "reserve_amount": 40000,
+      "reserved_amount": 40000,
+      "funded_amount": 80000,
+      "payment_status": "disputed",
+      "payment_history": [
+        {
+          "kind": "dispute",
+          "amount": 80000,
+          "description": "Открыт спор по заказу #6",
+          "created_at": "2026-04-28 04:12"
+        },
+        {
+          "kind": "reserve",
+          "amount": 40000,
+          "description": "50% бюджета зарезервировано исполнителю",
+          "created_at": "2026-04-21 06:22"
+        },
+        {
+          "kind": "fund",
+          "amount": 80000,
+          "fee_amount": 2700,
+          "total_amount": 82700,
+          "description": "Демонстрационное пополнение бюджета объявления с комиссией площадки",
+          "created_at": "2026-04-20 06:22"
+        }
+      ],
+      "platform_fee_fixed": 300,
+      "platform_fee_percent": 3,
+      "platform_fee_amount": 2700,
+      "fund_total_amount": 82700,
+      "funded_at": "2026-04-20 06:22",
+      "reserved_for": "student_dmitry",
+      "reserved_at": "2026-04-21 06:22",
+      "accepted_at": "2026-04-21 06:22",
+      "dispute_opened_at": "2026-04-28 04:12",
+      "dispute_opened_by": "customer_ivan",
+      "dispute_opened_role": "customer",
+      "dispute_reason": "Исполнитель прислал неполную версию и не согласен с перечнем доработок."
+    },
+    {
+      "id": 7,
+      "title": "Скрипт автоматизации Excel-отчётов",
+      "price": 12000,
+      "deadline_days": 5,
+      "description": "Нужно автоматически собирать Excel-отчёт из нескольких CSV-файлов и выделять проблемные строки.",
+      "tags": [
+        "Python",
+        "Excel",
+        "Автоматизация"
+      ],
+      "created_at": "2026-04-20 06:22",
+      "updated_at": "2026-04-28 05:52",
+      "owner": "customer_anna",
+      "status": "cancelled_by_student",
+      "executor": "student_maria",
+      "reserve_amount": 6000,
+      "reserved_amount": 0,
+      "funded_amount": 12000,
+      "payment_status": "refunded",
+      "payment_history": [
+        {
+          "kind": "refund",
+          "amount": 12000,
+          "description": "Возврат бюджета заказчику после отказа исполнителя",
+          "created_at": "2026-04-27 06:22"
+        },
+        {
+          "kind": "fund",
+          "amount": 12000,
+          "fee_amount": 660,
+          "total_amount": 12660,
+          "description": "Демонстрационное пополнение бюджета объявления с комиссией площадки",
+          "created_at": "2026-04-21 06:22"
+        }
+      ],
+      "platform_fee_fixed": 300,
+      "platform_fee_percent": 3,
+      "platform_fee_amount": 660,
+      "fund_total_amount": 12660,
+      "funded_at": "2026-04-21 06:22",
+      "cancelled_at": "2026-04-27 06:22",
+      "cancel_reason": "Исполнитель отказался: не успевает выполнить задачу в срок.",
+      "refunded_at": "2026-04-27 06:22"
+    }
+  ],
+  "applications": [
+    {
+      "id": 1,
+      "order_id": 2,
+      "username": "student_maria",
+      "message": "Могу сделать на Python с requests/BeautifulSoup и выгрузкой в CSV.",
+      "created_at": "2026-04-26 06:22",
+      "status": "pending",
+      "conversation_id": 1
+    },
+    {
+      "id": 2,
+      "order_id": 2,
+      "username": "student_oleg",
+      "message": "Есть опыт автоматизации сбора данных. Могу подготовить ещё README.",
+      "created_at": "2026-04-26 05:42",
+      "status": "pending",
+      "conversation_id": 2
+    },
+    {
+      "id": 3,
+      "order_id": 3,
+      "username": "student_dmitry",
+      "message": "Сделаю бота на Python, могу подключить простую админку для слотов.",
+      "created_at": "2026-04-23 06:22",
+      "status": "accepted",
+      "conversation_id": 3,
+      "customer_opened_chat": true,
+      "customer_opened_chat_at": "2026-04-23 06:22"
+    },
+    {
+      "id": 4,
+      "order_id": 4,
+      "username": "student_maria",
+      "message": "Готова сделать Django-прототип. Покажу промежуточный результат через неделю.",
+      "created_at": "2026-04-18 06:22",
+      "status": "accepted",
+      "conversation_id": 4,
+      "customer_opened_chat": true,
+      "customer_opened_chat_at": "2026-04-18 06:22"
+    },
+    {
+      "id": 5,
+      "order_id": 5,
+      "username": "student_oleg",
+      "message": "Могу собрать дашборд и простые графики.",
+      "created_at": "2026-04-09 06:22",
+      "status": "accepted",
+      "conversation_id": 5,
+      "customer_opened_chat": true,
+      "customer_opened_chat_at": "2026-04-09 06:22"
+    },
+    {
+      "id": 6,
+      "order_id": 6,
+      "username": "student_dmitry",
+      "message": "Flutter не основной стек, но прототип смогу собрать.",
+      "created_at": "2026-04-20 06:22",
+      "status": "accepted",
+      "conversation_id": 6,
+      "customer_opened_chat": true,
+      "customer_opened_chat_at": "2026-04-20 06:22"
+    },
+    {
+      "id": 7,
+      "order_id": 7,
+      "username": "student_maria",
+      "message": "Сделаю скрипт на pandas/openpyxl.",
+      "created_at": "2026-04-21 06:22",
+      "status": "cancelled",
+      "conversation_id": 7,
+      "customer_opened_chat": true,
+      "customer_opened_chat_at": "2026-04-21 06:22"
+    }
+  ],
+  "conversations": [
+    {
+      "id": 1,
+      "order_id": 2,
+      "student": "student_maria",
+      "customer": "customer_ivan",
+      "created_at": "2026-04-26 06:22",
+      "messages": [
+        {
+          "sender": "student_maria",
+          "text": "Здравствуйте! Могу сделать парсер на Python с выгрузкой в CSV.",
+          "created_at": "2026-04-26 06:22",
+          "kind": "text"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "order_id": 2,
+      "student": "student_oleg",
+      "customer": "customer_ivan",
+      "created_at": "2026-04-26 05:42",
+      "messages": [
+        {
+          "sender": "student_oleg",
+          "text": "Добрый день. Есть опыт автоматизации сбора данных, готов обсудить сайты-источники.",
+          "created_at": "2026-04-26 05:42",
+          "kind": "text"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "order_id": 3,
+      "student": "student_dmitry",
+      "customer": "customer_anna",
+      "created_at": "2026-04-23 06:22",
+      "customer_opened_chat": true,
+      "messages": [
+        {
+          "sender": "student_dmitry",
+          "text": "Здравствуйте, могу сделать бота и хранить заявки в JSON.",
+          "created_at": "2026-04-23 06:22",
+          "kind": "text"
+        },
+        {
+          "sender": "customer_anna",
+          "text": "Отлично. Важно, чтобы можно было редактировать список услуг.",
+          "created_at": "2026-04-23 06:42",
+          "kind": "text"
+        },
+        {
+          "sender": "system",
+          "text": "Статус отклика: принят на выполнение. На балансе исполнителя зарезервировано 50% бюджета.",
+          "created_at": "2026-04-23 06:57",
+          "kind": "system"
+        },
+        {
+          "sender": "student_dmitry",
+          "text": "Сделал структуру проекта, сегодня добавляю запись на свободные слоты.",
+          "created_at": "2026-04-28 05:12",
+          "kind": "text"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "order_id": 4,
+      "student": "student_maria",
+      "customer": "customer_ivan",
+      "created_at": "2026-04-18 06:22",
+      "customer_opened_chat": true,
+      "messages": [
+        {
+          "sender": "student_maria",
+          "text": "Готова сделать Django-прототип магазина.",
+          "created_at": "2026-04-18 06:22",
+          "kind": "text"
+        },
+        {
+          "sender": "system",
+          "text": "Статус отклика: принят на выполнение. На балансе исполнителя зарезервировано 50% бюджета.",
+          "created_at": "2026-04-18 06:32",
+          "kind": "system"
+        },
+        {
+          "sender": "system",
+          "text": "Исполнитель отправил работу на проверку: https://github.com/demo-maria/django-shop-demo\nКомментарий: Реализован каталог, корзина и оформление заявки. Инструкция запуска в README.",
+          "created_at": "2026-04-28 04:52",
+          "kind": "system"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "order_id": 5,
+      "student": "student_oleg",
+      "customer": "customer_anna",
+      "created_at": "2026-04-09 06:22",
+      "customer_opened_chat": true,
+      "messages": [
+        {
+          "sender": "student_oleg",
+          "text": "Могу собрать дашборд и графики на тестовых данных.",
+          "created_at": "2026-04-09 06:22",
+          "kind": "text"
+        },
+        {
+          "sender": "system",
+          "text": "Заказчик принял работу. Заказ завершён. Полная сумма начислена исполнителю.",
+          "created_at": "2026-04-26 06:22",
+          "kind": "system"
+        },
+        {
+          "sender": "customer_anna",
+          "text": "Привет привет",
+          "created_at": "2026-04-28 07:07",
+          "kind": "text"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "order_id": 6,
+      "student": "student_dmitry",
+      "customer": "customer_ivan",
+      "created_at": "2026-04-20 06:22",
+      "customer_opened_chat": true,
+      "messages": [
+        {
+          "sender": "student_dmitry",
+          "text": "Соберу Flutter-прототип с основными экранами.",
+          "created_at": "2026-04-20 06:22",
+          "kind": "text"
+        },
+        {
+          "sender": "customer_ivan",
+          "text": "Мне важно, чтобы были авторизация, каталог и личный кабинет.",
+          "created_at": "2026-04-20 06:47",
+          "kind": "text"
+        },
+        {
+          "sender": "system",
+          "text": "Иван Петров открыл спор по заказу. Причина: Исполнитель прислал неполную версию и не согласен с перечнем доработок.",
+          "created_at": "2026-04-28 04:12",
+          "kind": "system"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "order_id": 7,
+      "student": "student_maria",
+      "customer": "customer_anna",
+      "created_at": "2026-04-21 06:22",
+      "customer_opened_chat": true,
+      "messages": [
+        {
+          "sender": "student_maria",
+          "text": "Сделаю скрипт на pandas/openpyxl.",
+          "created_at": "2026-04-21 06:22",
+          "kind": "text"
+        },
+        {
+          "sender": "system",
+          "text": "Заказ отменён. Причина: Исполнитель отказался: не успевает выполнить задачу в срок.",
+          "created_at": "2026-04-27 06:22",
+          "kind": "system"
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "target_username": "student_oleg",
+      "target_role": "student",
+      "student_username": "student_oleg",
+      "reviewer_username": "customer_anna",
+      "reviewer_role": "customer",
+      "order_id": 5,
+      "rating": 5,
+      "text": "Олег быстро собрал понятный дашборд и подробно описал запуск проекта. Коммуникация отличная.",
+      "created_at": "2026-04-26 06:22"
+    },
+    {
+      "id": 2,
+      "target_username": "customer_anna",
+      "target_role": "customer",
+      "student_username": "student_oleg",
+      "reviewer_username": "student_oleg",
+      "reviewer_role": "student",
+      "order_id": 5,
+      "rating": 5,
+      "text": "Анна дала чёткое ТЗ и быстро проверила работу. Было комфортно выполнять заказ.",
+      "created_at": "2026-04-26 06:22"
+    }
+  ],
+  "support_tickets": [
+    {
+      "id": 3,
+      "user": "student_dmitry",
+      "user_name": "Дмитрий Соколов",
+      "category": "technical",
+      "subject": "Не приходит уведомление о сообщении",
+      "message": "В чате иногда вижу сообщение не сразу. Хочу уточнить, это ошибка или задержка обновления?",
+      "status": "new",
+      "admin_answer": "",
+      "admin_username": "",
+      "created_at": "2026-04-28 05:57",
+      "updated_at": "2026-04-28 05:57",
+      "closed_at": ""
+    },
+    {
+      "id": 2,
+      "user": "customer_anna",
+      "user_name": "Анна Морозова",
+      "category": "payment",
+      "subject": "Возврат после отказа исполнителя",
+      "message": "Исполнитель отказался от заказа. Хочу понять, где отображается возврат средств.",
+      "status": "in_progress",
+      "admin_answer": "Проверяем операцию возврата. Сумма должна отображаться в балансе заказчика как доступная к выводу.",
+      "admin_username": "admin",
+      "created_at": "2026-04-27 06:22",
+      "updated_at": "2026-04-28 05:22",
+      "closed_at": ""
+    },
+    {
+      "id": 1,
+      "user": "student_maria",
+      "user_name": "Мария Кузнецова",
+      "category": "order",
+      "subject": "Можно ли заменить ссылку на работу?",
+      "message": "Я отправила ссылку на GitHub, но хочу заменить её на актуальную ветку.",
+      "status": "closed",
+      "admin_answer": "Да, в демонстрационной версии можно отправить уточнение в чат заказчику. В следующей версии добавим редактирование отправки.",
+      "admin_username": "admin",
+      "created_at": "2026-04-25 06:22",
+      "updated_at": "2026-04-26 06:22",
+      "closed_at": "2026-04-26 06:22"
+    }
+  ],
+  "_version": 1
+}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Оставить отзыв — JobGuard{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <a href="{{ url_for('my_orders') }}" class="btn btn-outline-primary btn-sm rounded-3"><i class="bi bi-arrow-left me-1"></i>Назад</a>
+            <h1 class="h3 fw-bold mb-0">Оставить отзыв</h1>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-4 p-lg-5">
+                <div class="mb-4">
+                    <div class="text-muted small mb-1">Заказ</div>
+                    <div class="fw-semibold">{{ order.title }}</div>
+                    <div class="text-muted small mt-1">Исполнитель: <span class="text-light">{{ executor }}</span></div>
+                </div>
+
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.rating.label(class="form-label text-muted") }}
+                        {{ form.rating(class="form-select bg-dark-900 border-primary/30 text-light") }}
+                        {% if form.rating.errors %}<div class="text-danger small mt-1">{{ form.rating.errors[0] }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.text.label(class="form-label text-muted") }}
+                        {{ form.text(class="form-control bg-dark-900 border-primary/30 text-light", rows="5", placeholder="Расскажите о работе исполнителя...") }}
+                        {% if form.text.errors %}<div class="text-danger small mt-1">{{ form.text.errors[0] }}</div>{% endif %}
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        {{ form.submit(class="btn btn-primary btn-lg rounded-3") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

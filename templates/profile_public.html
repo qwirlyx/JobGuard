@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль {{ profile.display_name or owner }} — JobGuard{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body p-4 p-lg-5">
+                <div class="text-center mb-3">
+                    {% if profile.avatar_filename %}
+                        <img src="{{ url_for('avatar_download', filename=profile.avatar_filename) }}" alt="Аватар" class="rounded-circle mb-3" style="width:100px;height:100px;object-fit:cover;">
+                    {% else %}
+                        <span class="avatar d-inline-flex align-items-center justify-content-center bg-dark-900 border border-primary/30 mb-3" style="width:100px;height:100px;">
+                            <i class="bi bi-person fs-1 text-muted"></i>
+                        </span>
+                    {% endif %}
+                    <div class="fw-bold fs-5">{{ profile.display_name or owner }}</div>
+                    <div class="text-muted">{{ profile.city or 'Город не указан' }}</div>
+
+                    {% if role == 'student' %}
+                    <div class="mt-3">
+                        {% if rating.count > 0 %}
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <span class="fs-4 fw-bold text-warning">{{ rating.avg }}</span>
+                                <div class="d-flex">
+                                    {% set stars = [1, 2, 3, 4, 5] %}
+                                    {% for i in stars %}
+                                        {% if i <= rating.avg|int %}
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        {% elif i == rating.avg|round|int and rating.avg != rating.avg|int %}
+                                            <i class="bi bi-star-half text-warning"></i>
+                                        {% else %}
+                                            <i class="bi bi-star text-muted"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="text-muted small">({{ rating.count }})</span>
+                            </div>
+                        {% else %}
+                            <div class="text-muted small">Пока нет отзывов</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="text-muted small mb-1">Навыки</div>
+                {% if profile.skills %}
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        {% for s in profile.skills.split(',') %}
+                            {% if s.strip() %}
+                                <span class="badge bg-dark-900 border border-primary/30">{{ s.strip() }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-muted mb-3">Не указаны.</div>
+                {% endif %}
+
+                <div class="text-muted small mb-1">О себе</div>
+                <div class="mb-3">{{ profile.about or 'Пока пусто.' }}</div>
+
+                <div class="text-muted small mb-2">Ссылки</div>
+                <div class="d-flex flex-column gap-2">
+                    <div class="text-muted"><i class="bi bi-github me-2"></i>{{ profile.github or '—' }}</div>
+                    <div class="text-muted"><i class="bi bi-telegram me-2"></i>{{ profile.telegram or '—' }}</div>
+                    <div class="text-muted"><i class="bi bi-link-45deg me-2"></i>{{ profile.portfolio or '—' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-body p-4 p-lg-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="fw-semibold">Проекты</div>
+                </div>
+
+                {% set projects = profile.projects or [] %}
+                {% if projects|length == 0 %}
+                    <div class="text-muted">Пока нет проектов в портфолио.</div>
+                {% else %}
+                    <div class="row g-3">
+                        {% for p in projects %}
+                            <div class="col-md-6">
+                                <div class="p-3 rounded-4" style="background: rgba(2, 8, 23, 0.35); border: 1px solid rgba(148, 163, 184, 0.35);">
+                                    <div class="fw-semibold">{{ p.title }}</div>
+                                    <div class="text-muted small mb-1">{{ p.role }}</div>
+                                    <div class="text-muted small mb-2">{{ p.stack }}</div>
+                                    <div class="text-muted mb-2">{{ p.summary }}</div>
+                                    {% if p.link %}
+                                        <a href="{{ p.link }}" target="_blank" class="text-primary text-decoration-none small">
+                                            <i class="bi bi-box-arrow-up-right me-1"></i>Смотреть
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if role == 'student' %}
+        <div class="card">
+            <div class="card-body p-4 p-lg-5">
+                <div class="fw-semibold mb-4">Отзывы ({{ rating.count }})</div>
+
+                {% if rating.reviews|length == 0 %}
+                    <div class="text-muted">Пока нет отзывов.</div>
+                {% else %}
+                    <div class="d-flex flex-column gap-4">
+                        {% for review in rating.reviews %}
+                            <div class="p-3 rounded-3" style="background: rgba(2, 8, 23, 0.35);">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fw-semibold">{{ user_display_name(review.reviewer_username) }}</span>
+                                        <span class="badge bg-warning text-dark">{{ review.rating }} <i class="bi bi-star-fill"></i></span>
+                                    </div>
+                                    <span class="text-muted small">{{ review.created_at }}</span>
+                                </div>
+                                <div class="text-light">{{ review.text }}</div>
+                                <div class="mt-2">
+                                    <a href="{{ url_for('order_detail', order_id=review.order_id) }}" class="text-primary small text-decoration-none">
+                                        Заказ #{{ review.order_id }}
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Настройки аккаунта — JobGuard{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">Настройки аккаунта</h1>
+        <div class="text-muted">Аватарка, имя, контакты и безопасность аккаунта.</div>
+    </div>
+    <a href="{{ url_for('public_profile', username=current_user.id) }}" class="btn btn-outline-primary rounded-3">
+        <i class="bi bi-eye me-1"></i>Публичный профиль
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="glass-card settings-card p-4 rounded-4 border border-primary/20 mb-4">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="icon-box">
+                    <i class="bi bi-person-gear"></i>
+                </div>
+                <div>
+                    <h2 class="h4 mb-1">Данные аккаунта</h2>
+                    <div class="text-muted small">
+                        Эти данные отображаются в профиле, откликах, переписке и уведомлениях.
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" novalidate>
+                {{ account_form.hidden_tag() }}
+                <input type="hidden" name="form_type" value="account">
+
+                <div class="settings-avatar-panel mb-4">
+                    <div class="settings-avatar-preview">
+                        {% set avatar = get_avatar(current_user.id) %}
+                        {% if avatar %}
+                            <img src="{{ url_for('avatar_download', filename=avatar) }}" alt="Аватар пользователя">
+                        {% else %}
+                            <div class="settings-avatar-empty">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="settings-avatar-info">
+                        <div class="fw-semibold mb-1">Аватарка профиля</div>
+                        <div class="text-muted small mb-3">
+                            Изображение будет показываться в меню, профиле, откликах и чате. Лучше использовать квадратную картинку.
+                        </div>
+
+                        {{ account_form.avatar.label(class="form-label text-muted") }}
+                        {{ account_form.avatar(class="form-control bg-dark-900 border-primary/30 text-light", accept=".jpg,.jpeg,.png,.webp") }}
+                        {% if account_form.avatar.errors %}
+                            <div class="text-danger small mt-1">{{ account_form.avatar.errors[0] }}</div>
+                        {% endif %}
+                        <div class="form-text text-muted">JPG, JPEG, PNG или WEBP. Размер до 2 МБ.</div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {{ account_form.display_name.label(class="form-label text-muted") }}
+                        {{ account_form.display_name(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="Как вас будут видеть пользователи") }}
+                        {% if account_form.display_name.errors %}
+                            <div class="text-danger small mt-1">{{ account_form.display_name.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ account_form.email.label(class="form-label text-muted") }}
+                        {{ account_form.email(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="email@example.com") }}
+                        {% if account_form.email.errors %}
+                            <div class="text-danger small mt-1">{{ account_form.email.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ account_form.city.label(class="form-label text-muted") }}
+                        {{ account_form.city(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="Например: Москва") }}
+                        {% if account_form.city.errors %}
+                            <div class="text-danger small mt-1">{{ account_form.city.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ account_form.telegram.label(class="form-label text-muted") }}
+                        {{ account_form.telegram(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="@username") }}
+                        {% if account_form.telegram.errors %}
+                            <div class="text-danger small mt-1">{{ account_form.telegram.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ account_form.github.label(class="form-label text-muted") }}
+                        {{ account_form.github(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="https://github.com/username") }}
+                        {% if account_form.github.errors %}
+                            <div class="text-danger small mt-1">{{ account_form.github.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ account_form.portfolio.label(class="form-label text-muted") }}
+                        {{ account_form.portfolio(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="https://example.com") }}
+                        {% if account_form.portfolio.errors %}
+                            <div class="text-danger small mt-1">{{ account_form.portfolio.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4 settings-actions">
+                    {{ account_form.submit(class="btn btn-primary px-4") }}
+                </div>
+            </form>
+        </div>
+
+        <div class="glass-card settings-card p-4 rounded-4 border border-danger/20">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="icon-box text-danger">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <div>
+                    <h2 class="h5 mb-1">Смена пароля</h2>
+                    <div class="text-muted small">
+                        Для безопасности сначала укажите текущий пароль.
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" novalidate>
+                {{ password_form.hidden_tag() }}
+                <input type="hidden" name="form_type" value="password">
+
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        {{ password_form.current_password.label(class="form-label text-muted") }}
+                        {{ password_form.current_password(class="form-control bg-dark-900 border-primary/30 text-light") }}
+                        {% if password_form.current_password.errors %}
+                            <div class="text-danger small mt-1">{{ password_form.current_password.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ password_form.new_password.label(class="form-label text-muted") }}
+                        {{ password_form.new_password(class="form-control bg-dark-900 border-primary/30 text-light") }}
+                        {% if password_form.new_password.errors %}
+                            <div class="text-danger small mt-1">{{ password_form.new_password.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ password_form.confirm_password.label(class="form-label text-muted") }}
+                        {{ password_form.confirm_password(class="form-control bg-dark-900 border-primary/30 text-light") }}
+                        {% if password_form.confirm_password.errors %}
+                            <div class="text-danger small mt-1">{{ password_form.confirm_password.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4 settings-actions">
+                    {{ password_form.submit(class="btn btn-outline-danger px-4") }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="glass-card settings-help-card p-4 rounded-4 border border-primary/20 sticky-lg-top" style="top: 90px;">
+            <h2 class="h5 mb-3">Что здесь меняется</h2>
+
+            <div class="text-muted small mb-3">
+                Настройки аккаунта отвечают за то, как вас видят другие пользователи сервиса.
+            </div>
+
+            <ul class="list-unstyled small text-muted mb-4">
+                <li class="mb-2">
+                    <i class="bi bi-check-circle text-success me-2"></i>
+                    Аватарка отображается в меню, профиле, откликах и сообщениях.
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle text-success me-2"></i>
+                    Имя используется вместо технического логина.
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle text-success me-2"></i>
+                    Контакты видны в публичном профиле.
+                </li>
+                <li>
+                    <i class="bi bi-check-circle text-success me-2"></i>
+                    Пароль хранится в хешированном виде.
+                </li>
+            </ul>
+
+            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-person-lines-fill me-1"></i>
+                Перейти в профиль
+            </a>
+
+            <a href="{{ url_for('public_profile', username=current_user.id) }}" class="btn btn-primary w-100">
+                <i class="bi bi-eye me-1"></i>
+                Открыть публичный профиль
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль — JobGuard{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">Профиль</h1>
+        <div class="text-muted">Настрой навыки, описание и резюме — это влияет на доверие заказчиков.</div>
+    </div>
+    <div class="text-muted small">Роль: <span class="text-light">{{ current_role }}</span></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-body p-4 p-lg-5">
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    {% if form.avatar is defined %}
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                {% if profile.avatar_filename %}
+                                    <img src="{{ url_for('avatar_download', filename=profile.avatar_filename) }}" alt="Аватар" class="rounded-circle" style="width:72px;height:72px;object-fit:cover;">
+                                {% else %}
+                                    <span class="avatar d-flex align-items-center justify-content-center bg-dark-900 border border-primary/30" style="width:72px;height:72px;">
+                                        <i class="bi bi-person fs-1 text-muted"></i>
+                                    </span>
+                                {% endif %}
+                                <div>
+                                    {{ form.avatar.label(class="form-label text-muted mb-1") }}
+                                    <div class="text-muted small">JPG или PNG, до 2MB.</div>
+                                </div>
+                            </div>
+                            {{ form.avatar(class="form-control bg-dark-900 border-primary/30 text-light") }}
+                            {% if form.avatar.errors %}<div class="text-danger small mt-1">{{ form.avatar.errors[0] }}</div>{% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if form.display_name is defined or form.city is defined %}
+                        <div class="row g-3">
+                            {% if form.display_name is defined %}
+                                <div class="col-md-6">
+                                    {{ form.display_name.label(class="form-label text-muted") }}
+                                    {{ form.display_name(class="form-control form-control-lg bg-dark-900 border-primary/30 text-light", placeholder="Как к тебе обращаться") }}
+                                    {% if form.display_name.errors %}<div class="text-danger small mt-1">{{ form.display_name.errors[0] }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                            {% if form.city is defined %}
+                                <div class="col-md-6">
+                                    {{ form.city.label(class="form-label text-muted") }}
+                                    {{ form.city(class="form-control form-control-lg bg-dark-900 border-primary/30 text-light", placeholder="Например: Омск") }}
+                                    {% if form.city.errors %}<div class="text-danger small mt-1">{{ form.city.errors[0] }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if form.skills is defined %}
+                        <div class="mt-3">
+                            {{ form.skills.label(class="form-label text-muted") }}
+                            {{ form.skills(class="form-control form-control-lg bg-dark-900 border-primary/30 text-light", placeholder="Python, Flask, Figma, SQL, ...") }}
+                            <div class="text-muted small mt-1">Через запятую. Эти навыки видны в публичном профиле.</div>
+                            {% if form.skills.errors %}<div class="text-danger small mt-1">{{ form.skills.errors[0] }}</div>{% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if form.about is defined %}
+                        <div class="mt-3">
+                            {{ form.about.label(class="form-label text-muted") }}
+                            {{ form.about(class="form-control bg-dark-900 border-primary/30 text-light", rows="7", placeholder="Опыт, кейсы, чем полезен заказчику, что умеешь делать...") }}
+                            {% if form.about.errors %}<div class="text-danger small mt-1">{{ form.about.errors[0] }}</div>{% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if form.github is defined or form.telegram is defined or form.portfolio is defined %}
+                        <div class="row g-3 mt-1">
+                            {% if form.github is defined %}
+                                <div class="col-md-4">
+                                    {{ form.github.label(class="form-label text-muted") }}
+                                    {{ form.github(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="github.com/username") }}
+                                    {% if form.github.errors %}<div class="text-danger small mt-1">{{ form.github.errors[0] }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                            {% if form.telegram is defined %}
+                                <div class="col-md-4">
+                                    {{ form.telegram.label(class="form-label text-muted") }}
+                                    {{ form.telegram(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="@username") }}
+                                    {% if form.telegram.errors %}<div class="text-danger small mt-1">{{ form.telegram.errors[0] }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                            {% if form.portfolio is defined %}
+                                <div class="col-md-4">
+                                    {{ form.portfolio.label(class="form-label text-muted") }}
+                                    {{ form.portfolio(class="form-control bg-dark-900 border-primary/30 text-light", placeholder="behance / dribbble / site") }}
+                                    {% if form.portfolio.errors %}<div class="text-danger small mt-1">{{ form.portfolio.errors[0] }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if form.resume is defined %}
+                        <div class="mt-3">
+                            {{ form.resume.label(class="form-label text-muted") }}
+                            {{ form.resume(class="form-control bg-dark-900 border-primary/30 text-light") }}
+                            {% if form.resume.errors %}<div class="text-danger small mt-1">{{ form.resume.errors[0] }}</div>{% endif %}
+                            <div class="text-muted small mt-1">PDF, DOC или DOCX. Резюме доступно только владельцу аккаунта на текущем этапе.</div>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid mt-4">
+                        {{ form.submit(class="btn btn-primary btn-lg rounded-3") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-body p-4 p-lg-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="fw-semibold">Превью профиля</div>
+                    <a href="{{ url_for('public_profile', username=current_user.id) }}" class="btn btn-sm btn-outline-primary rounded-3">
+                        Открыть публичный профиль
+                    </a>
+                </div>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    {% if profile.avatar_filename %}
+                        <img src="{{ url_for('avatar_download', filename=profile.avatar_filename) }}" alt="Аватар" class="rounded-circle" style="width:44px;height:44px;object-fit:cover;">
+                    {% else %}
+                        <span class="avatar" style="width:44px;height:44px;"><i class="bi bi-person fs-4"></i></span>
+                    {% endif %}
+                    <div>
+                        <div class="fw-bold">{{ profile.display_name or current_user.id }}</div>
+                        <div class="text-muted">{{ profile.city or 'Город не указан' }}</div>
+                    </div>
+                </div>
+
+                <div class="text-muted small mb-1">Навыки</div>
+                {% if profile.skills %}
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        {% for s in profile.skills.split(',') %}
+                            {% if s.strip() %}
+                                <span class="badge bg-dark-900 border border-primary/30">{{ s.strip() }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-muted mb-3">Не указаны.</div>
+                {% endif %}
+
+                <div class="text-muted small mb-1">О себе</div>
+                <div class="mb-3">{{ profile.about or 'Пока пусто.' }}</div>
+
+                <div class="text-muted small mb-2">Ссылки</div>
+                <div class="d-flex flex-column gap-2">
+                    <div class="text-muted"><i class="bi bi-github me-2"></i>{{ profile.github or '—' }}</div>
+                    <div class="text-muted"><i class="bi bi-telegram me-2"></i>{{ profile.telegram or '—' }}</div>
+                    <div class="text-muted"><i class="bi bi-link-45deg me-2"></i>{{ profile.portfolio or '—' }}</div>
+                </div>
+
+                <hr class="border-primary/30 my-4">
+
+                <div class="fw-semibold mb-2">Резюме</div>
+                {% if profile.resume_filename %}
+                    <a class="btn btn-outline-primary rounded-3 w-100" href="{{ url_for('resume_download', filename=profile.resume_filename) }}">
+                        <i class="bi bi-download me-1"></i> Скачать резюме
+                    </a>
+                {% else %}
+                    <div class="text-muted">Файл не загружен.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
