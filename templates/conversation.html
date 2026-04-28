@@ -1,12 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Чат — JobGuard{% endblock %}
 {% block content %}
-<style>
-.chat-page .card,.chat-page .card:hover{transform:none!important}.chat-page__body{height:70vh;max-height:720px}.live-chat-scroll{padding-right:.35rem}.live-row{display:flex;width:100%;margin-bottom:.55rem}.live-row.me{justify-content:flex-end}.live-row.other{justify-content:flex-start}.live-row.system{justify-content:center}.live-bubble{display:inline-block!important;width:auto!important;min-width:0!important;max-width:min(390px,74%)!important;height:auto!important;min-height:0!important;padding:8px 11px 6px!important;border-radius:16px!important;line-height:1.38!important;box-sizing:border-box!important;box-shadow:none!important;transform:none!important}.live-bubble.me{background:linear-gradient(135deg,var(--primary),var(--primary-dark))!important;color:#fff!important;border:none!important;border-bottom-right-radius:6px!important}.live-bubble.other{background:var(--dark-900)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-bottom-left-radius:6px!important}.live-bubble.system{max-width:82%!important;background:var(--primary-soft)!important;color:var(--text-muted)!important;border:1px solid var(--line)!important;font-size:12px!important;text-align:center!important}.live-text{display:block!important;margin:0!important;padding:0!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:break-word!important;font-size:14px!important;line-height:1.38!important}.live-meta{display:block!important;margin-top:4px!important;padding:0!important;font-size:10.5px!important;line-height:1!important;opacity:.62!important;text-align:right!important;white-space:nowrap!important}.chat-input{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:18px!important;padding:8px!important;box-shadow:var(--card-shadow-soft)!important}@media(max-width:768px){.live-bubble{max-width:86%!important}.chat-page__body{height:calc(100vh - 190px);max-height:none}.chat-input{border-radius:16px!important}}
-</style>
-
 <div class="chat-page">
-  <div class="row g-4">
+  <div class="row g-3 g-lg-4">
     <div class="col-lg-4 d-none d-lg-block">
       <div class="card h-100"><div class="card-body p-3 p-lg-4">
         <div class="fw-semibold mb-2">О заказе</div>
@@ -20,10 +16,10 @@
       </div></div>
     </div>
     <div class="col-lg-8">
-      <div class="card"><div class="card-body d-flex flex-column chat-page__body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="card chat-card"><div class="card-body d-flex flex-column chat-page__body p-2 p-sm-3 p-lg-4">
+        <div class="chat-page__header d-flex justify-content-between align-items-start gap-2 mb-3">
           <div><div class="text-muted small">Диалог по заказу #{{ order.id }}</div><div class="fw-semibold">{{ order.title }}</div></div>
-          <a class="btn btn-outline-primary btn-sm rounded-3" href="{{ url_for('messages') }}">Все диалоги</a>
+          <a class="btn btn-outline-primary btn-sm rounded-3 flex-shrink-0" href="{{ url_for('messages') }}">Все диалоги</a>
         </div>
         <div class="flex-grow-1 overflow-auto mb-3 live-chat-scroll" id="chatScroll"></div>
         <form method="POST" enctype="multipart/form-data" class="mt-auto" id="chatForm" action="{{ url_for('conversation', conv_id=conv.id) }}">
@@ -31,7 +27,7 @@
             <button class="btn btn-outline-primary chat-input-attach" type="button" id="chatAttachBtn"><i class="bi bi-paperclip"></i></button>
             <textarea class="form-control bg-dark-900 border-primary/30 text-light chat-input-text" id="chatText" name="text" rows="1" placeholder="Напиши сообщение..." style="resize:none;"></textarea>
             <input type="file" name="file" id="chatFile" class="d-none" accept=".pdf,.doc,.docx">
-            <button class="btn btn-primary rounded-3 chat-input-send" type="submit"><i class="bi bi-send me-1"></i> Отправить</button>
+            <button class="btn btn-primary rounded-3 chat-input-send" type="submit"><i class="bi bi-send me-1"></i><span class="chat-send-text">Отправить</span></button>
           </div>
         </form>
       </div></div>
